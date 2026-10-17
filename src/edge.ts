@@ -29,18 +29,10 @@ export type Leg = {
   ev: number;
 };
 
-export type Parlay = {
-  legs: Leg[];
-  decimal: number;
-  fair: number;
-  ev: number;
-};
-
 export type Slate = {
   gamesInWindow: number;
   pricedGames: number;
   legs: Leg[];
-  parlays: Parlay[];
 };
 
 const isAmerican = (odds: number): boolean =>
@@ -100,34 +92,6 @@ export const priceGame = (game: Game, sharpBook: string): Leg[] | undefined => {
   return legs;
 };
 
-const sameGame = (legs: Leg[]): boolean => new Set(legs.map((leg) => leg.gameId)).size !== legs.length;
-
-const combinations = (legs: Leg[]): Leg[][] => {
-  const groups: Leg[][] = [];
-  for (let i = 0; i < legs.length; i++) {
-    for (let j = i + 1; j < legs.length; j++) groups.push([legs[i], legs[j]]);
-  }
-  for (let i = 0; i < legs.length; i++) {
-    for (let j = i + 1; j < legs.length; j++) {
-      for (let k = j + 1; k < legs.length; k++) groups.push([legs[i], legs[j], legs[k]]);
-    }
-  }
-  return groups;
-};
-
-// Product of the single prices, assuming independent legs. Books usually add more juice, so this EV is an upper bound.
-export const parlaysFromLegs = (legs: Leg[]): Parlay[] => {
-  const positive = legs.filter((leg) => leg.ev > 0);
-  const parlays: Parlay[] = [];
-  for (const group of combinations(positive)) {
-    if (sameGame(group)) continue;
-    const decimal = group.reduce((product, leg) => product * leg.decimal, 1);
-    const fair = group.reduce((product, leg) => product * leg.fair, 1);
-    parlays.push({ legs: group, decimal, fair, ev: expectedValue(fair, decimal) });
-  }
-  return parlays.sort((a, b) => b.ev - a.ev);
-};
-
 export const priceSlate = (games: Game[], now: Date, sharpBook = SHARP_BOOK): Slate => {
   const windowEnd = now.getTime() + SLATE_HOURS * 60 * 60 * 1000;
   const inWindow = games.filter((game) => {
@@ -148,42 +112,5 @@ export const priceSlate = (games: Game[], now: Date, sharpBook = SHARP_BOOK): Sl
     gamesInWindow: inWindow.length,
     pricedGames,
     legs: legs.sort((a, b) => b.ev - a.ev),
-    parlays: parlaysFromLegs(legs),
   };
-};
-
-const formatAmerican = (american: number): string => {
-  const rounded = Math.round(american);
-  return rounded > 0 ? `+${rounded}` : `${rounded}`;
-};
-
-const pct = (value: number): string => `${(value * 100).toFixed(1)}%`;
-
-const formatLeg = (leg: Leg): string =>
-  `${leg.side} ${formatAmerican(leg.american)} ${leg.bookTitle}  ev ${pct(leg.ev)}  fair ${pct(leg.fair)}`;
-
-export const formatReport = (slate: Slate): string => {
-  const byGame = new Map<string, Leg[]>();
-  for (const leg of slate.legs) {
-    const group = byGame.get(leg.gameId);
-    if (group) group.push(leg);
-    else byGame.set(leg.gameId, [leg]);
-  }
-  const arbs = [...byGame.values()].filter((group) => group.length >= 2);
-
-  const lines: string[] = [];
-  if (arbs.length > 0) {
-    lines.push('Arbs', ...arbs.map((group) => group.map(formatLeg).join(' | ')), '');
-  }
-  lines.push(slate.legs.length > 0 ? 'Legs' : 'No +EV legs');
-  lines.push(...slate.legs.map(formatLeg), '');
-  const top = slate.parlays.slice(0, 5);
-  lines.push(top.length > 0 ? 'Parlays' : 'No +EV parlays');
-  top.forEach((parlay, index) => {
-    const desc = parlay.legs
-      .map((leg) => `${leg.side} ${formatAmerican(leg.american)} ${leg.bookTitle}`)
-      .join(' | ');
-    lines.push(`${index + 1}. ${pct(parlay.ev)}  ${desc}`);
-  });
-  return lines.join('\n');
 };

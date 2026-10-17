@@ -1,7 +1,10 @@
 import { z } from 'zod';
 import { Game, Quote } from './edge';
+import type { ApiCallRecorder } from './data/cfbd';
 
 export const NCAAF_SPORT = 'americanfootball_ncaaf';
+export const ODDS_RESERVE_CREDITS = 25;
+export const ODDS_CACHE_TTL_MS = 5 * 60 * 1000;
 
 const eventSchema = z.object({
   id: z.string(),
@@ -22,45 +25,10 @@ const eventSchema = z.object({
   ),
 });
 
-const scoreSchema = z.object({
-  id: z.string(),
-  commence_time: z.string().datetime(),
-  completed: z.boolean(),
-  home_team: z.string(),
-  away_team: z.string(),
-  scores: z
-    .array(z.object({ name: z.string(), score: z.string() }))
-    .nullable()
-    .optional(),
-});
-
-export type GameScore = {
-  id: string;
-  startsAt: Date;
-  completed: boolean;
-  home: string;
-  away: string;
-  homeScore?: number;
-  awayScore?: number;
-};
-
-type CacheEntry<T> = { expiresAt: number; value: T };
-
-const memoryCache = new Map<string, CacheEntry<unknown>>();
-
-export const ODDS_CACHE_TTL_MS = 5 * 60 * 1000;
-export const SCORES_CACHE_TTL_MS = 60 * 1000;
+let cache: { key: string; expiresAt: number; games: Game[] } | undefined;
 
 export const clearOddsApiCache = (): void => {
-  memoryCache.clear();
-};
-
-const cached = async <T>(key: string, ttlMs: number, load: () => Promise<T>): Promise<T> => {
-  const hit = memoryCache.get(key) as CacheEntry<T> | undefined;
-  if (hit && hit.expiresAt > Date.now()) return hit.value;
-  const value = await load();
-  memoryCache.set(key, { expiresAt: Date.now() + ttlMs, value });
-  return value;
+  cache = undefined;
 };
 
 export const toGames = (payload: unknown): Game[] =>
@@ -86,46 +54,23 @@ export const toGames = (payload: unknown): Game[] =>
     };
   });
 
-export const toScores = (payload: unknown): GameScore[] =>
-  scoreSchema.array().parse(payload).map((event) => {
-    const homeRaw = event.scores?.find((row) => row.name === event.home_team)?.score;
-    const awayRaw = event.scores?.find((row) => row.name === event.away_team)?.score;
-    const homeScore = homeRaw === undefined ? undefined : Number(homeRaw);
-    const awayScore = awayRaw === undefined ? undefined : Number(awayRaw);
-    return {
-      id: event.id,
-      startsAt: new Date(event.commence_time),
-      completed: event.completed,
-      home: event.home_team,
-      away: event.away_team,
-      homeScore: Number.isFinite(homeScore) ? homeScore : undefined,
-      awayScore: Number.isFinite(awayScore) ? awayScore : undefined,
-    };
-  });
-
-const fetchJson = async (url: URL): Promise<unknown> => {
-  const response = await fetch(url);
-  if (!response.ok) {
-    throw new Error(`Odds API ${response.status}: ${await response.text()}`);
+export const fetchNcaafOdds = async (input: {
+  apiKey: string;
+  remainingCredits: () => Promise<number | undefined>;
+  recordCall: ApiCallRecorder;
+}): Promise<Game[]> => {
+  const key = input.apiKey.slice(0, 8);
+  if (cache?.key === key && cache.expiresAt > Date.now()) return cache.games;
+  const remaining = await input.remainingCredits();
+  if (remaining !== undefined && remaining <= ODDS_RESERVE_CREDITS) {
+    throw new Error(`Odds API budget reserve reached (${remaining} credits left this month)`);
   }
-  return response.json();
+  const path = `/v4/sports/${NCAAF_SPORT}/odds?regions=us,eu&markets=h2h&oddsFormat=american`;
+  const response = await fetch(`https://api.the-odds-api.com${path}&apiKey=${input.apiKey}`);
+  const header = response.headers.get('x-requests-remaining');
+  await input.recordCall({ path, status: response.status, remaining: header === null ? undefined : Number(header) });
+  if (!response.ok) throw new Error(`Odds API ${response.status}: ${await response.text()}`);
+  const games = toGames(await response.json());
+  cache = { key, expiresAt: Date.now() + ODDS_CACHE_TTL_MS, games };
+  return games;
 };
-
-export const fetchNcaafOdds = async (apiKey: string): Promise<Game[]> =>
-  cached(`odds:${NCAAF_SPORT}:${apiKey.slice(0, 8)}`, ODDS_CACHE_TTL_MS, async () => {
-    const url = new URL(`https://api.the-odds-api.com/v4/sports/${NCAAF_SPORT}/odds`);
-    url.searchParams.set('apiKey', apiKey);
-    url.searchParams.set('regions', 'us,eu');
-    url.searchParams.set('markets', 'h2h');
-    url.searchParams.set('oddsFormat', 'american');
-    return toGames(await fetchJson(url));
-  });
-
-export const fetchNcaafScores = async (apiKey: string, daysFrom = 3): Promise<GameScore[]> =>
-  cached(`scores:${NCAAF_SPORT}:${daysFrom}:${apiKey.slice(0, 8)}`, SCORES_CACHE_TTL_MS, async () => {
-    const url = new URL(`https://api.the-odds-api.com/v4/sports/${NCAAF_SPORT}/scores`);
-    url.searchParams.set('apiKey', apiKey);
-    url.searchParams.set('daysFrom', String(daysFrom));
-    url.searchParams.set('dateFormat', 'iso');
-    return toScores(await fetchJson(url));
-  });

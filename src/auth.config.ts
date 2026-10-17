@@ -1,15 +1,15 @@
 import type { NextAuthConfig } from 'next-auth';
+import Google from 'next-auth/providers/google';
+
+const PUBLIC_PATHS = ['/login', '/api/auth', '/api/cron'];
 
 export const authConfig = {
-  providers: [],
-  pages: {
-    signIn: '/login',
-    verifyRequest: '/login/verify',
-    error: '/login',
-  },
+  providers: [Google],
+  pages: { signIn: '/login', error: '/login' },
+  session: { strategy: 'jwt' },
   callbacks: {
-    authorized() {
-      return true;
+    authorized({ auth, request }) {
+      return Boolean(auth?.user) || PUBLIC_PATHS.some((path) => request.nextUrl.pathname.startsWith(path));
     },
   },
   trustHost: true,

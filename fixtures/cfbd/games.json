@@ -1,0 +1,1109 @@
+[
+ {
+  "id": 401520276,
+  "season": 2023,
+  "week": 5,
+  "seasonType": "regular",
+  "startsAt": "2023-09-29T00:00:00.000Z",
+  "completed": true,
+  "neutralSite": false,
+  "conferenceGame": true,
+  "homeTeam": "Sam Houston",
+  "awayTeam": "Jacksonville State",
+  "homeConference": "Conference USA",
+  "awayConference": "Conference USA",
+  "homeClassification": "fbs",
+  "awayClassification": "fbs",
+  "homePoints": 28,
+  "awayPoints": 35,
+  "homeElo": 1396,
+  "awayElo": 1505,
+  "lines": [
+   {
+    "provider": "Bovada",
+    "spread": 6.5,
+    "spreadOpen": 6,
+    "total": 36,
+    "totalOpen": 36.5,
+    "homeMoneyline": 210,
+    "awayMoneyline": -250
+   },
+   {
+    "provider": "DraftKings",
+    "spread": 6.5,
+    "spreadOpen": 6.5,
+    "total": 36.5,
+    "totalOpen": 36.5,
+    "homeMoneyline": 210,
+    "awayMoneyline": -258
+   },
+   {
+    "provider": "William Hill (New Jersey)",
+    "spread": 7,
+    "total": 36
+   }
+  ]
+ },
+ {
+  "id": 401520277,
+  "season": 2023,
+  "week": 5,
+  "seasonType": "regular",
+  "startsAt": "2023-09-28T23:30:00.000Z",
+  "completed": true,
+  "neutralSite": false,
+  "conferenceGame": true,
+  "homeTeam": "Western Kentucky",
+  "awayTeam": "Middle Tennessee",
+  "homeConference": "Conference USA",
+  "awayConference": "Conference USA",
+  "homeClassification": "fbs",
+  "awayClassification": "fbs",
+  "homePoints": 31,
+  "awayPoints": 10,
+  "homeElo": 1506,
+  "awayElo": 1320,
+  "lines": [
+   {
+    "provider": "Bovada",
+    "spread": -5.5,
+    "spreadOpen": -8,
+    "total": 60,
+    "totalOpen": 60,
+    "homeMoneyline": -225,
+    "awayMoneyline": 185
+   },
+   {
+    "provider": "DraftKings",
+    "spread": -7,
+    "spreadOpen": -5.5,
+    "total": 60,
+    "totalOpen": 59.5,
+    "homeMoneyline": -278,
+    "awayMoneyline": 225
+   },
+   {
+    "provider": "William Hill (New Jersey)",
+    "spread": -6.5,
+    "total": 61
+   }
+  ]
+ },
+ {
+  "id": 401520278,
+  "season": 2023,
+  "week": 5,
+  "seasonType": "regular",
+  "startsAt": "2023-09-30T01:00:00.000Z",
+  "completed": true,
+  "neutralSite": false,
+  "conferenceGame": true,
+  "homeTeam": "UTEP",
+  "awayTeam": "Louisiana Tech",
+  "homeConference": "Conference USA",
+  "awayConference": "Conference USA",
+  "homeClassification": "fbs",
+  "awayClassification": "fbs",
+  "homePoints": 10,
+  "awayPoints": 24,
+  "homeElo": 1210,
+  "awayElo": 1211,
+  "lines": [
+   {
+    "provider": "Bovada",
+    "spread": 1,
+    "spreadOpen": -1,
+    "total": 52.5,
+    "totalOpen": 52.5,
+    "homeMoneyline": -110,
+    "awayMoneyline": -110
+   },
+   {
+    "provider": "DraftKings",
+    "spread": -1,
+    "spreadOpen": -1,
+    "total": 50.5,
+    "totalOpen": 53,
+    "homeMoneyline": -115,
+    "awayMoneyline": -105
+   },
+   {
+    "provider": "William Hill (New Jersey)",
+    "spread": 2,
+    "total": 49.5
+   }
+  ]
+ },
+ {
+  "id": 401520279,
+  "season": 2023,
+  "week": 5,
+  "seasonType": "regular",
+  "startsAt": "2023-09-30T16:00:00.000Z",
+  "completed": true,
+  "neutralSite": true,
+  "conferenceGame": true,
+  "homeTeam": "Arkansas",
+  "awayTeam": "Texas A&M",
+  "homeConference": "SEC",
+  "awayConference": "SEC",
+  "homeClassification": "fbs",
+  "awayClassification": "fbs",
+  "homePoints": 22,
+  "awayPoints": 34,
+  "homeElo": 1621,
+  "awayElo": 1722,
+  "lines": [
+   {
+    "provider": "Bovada",
+    "spread": 6.5,
+    "spreadOpen": 6.5,
+    "total": 54.5,
+    "totalOpen": 55.5,
+    "homeMoneyline": 210,
+    "awayMoneyline": -250
+   },
+   {
+    "provider": "DraftKings",
+    "spread": 6,
+    "spreadOpen": 4,
+    "total": 54,
+    "homeMoneyline": 200,
+    "awayMoneyline": -245
+   },
+   {
+    "provider": "William Hill (New Jersey)",
+    "spread": 6.5,
+    "total": 53.5
+   }
+  ]
+ },
+ {
+  "id": 401520280,
+  "season": 2023,
+  "week": 5,
+  "seasonType": "regular",
+  "startsAt": "2023-09-30T19:30:00.000Z",
+  "completed": true,
+  "neutralSite": false,
+  "conferenceGame": true,
+  "homeTeam": "Auburn",
+  "awayTeam": "Georgia",
+  "homeConference": "SEC",
+  "awayConference": "SEC",
+  "homeClassification": "fbs",
+  "awayClassification": "fbs",
+  "homePoints": 20,
+  "awayPoints": 27,
+  "homeElo": 1607,
+  "awayElo": 2055,
+  "lines": [
+   {
+    "provider": "Bovada",
+    "spread": 14.5,
+    "spreadOpen": 18,
+    "total": 47,
+    "totalOpen": 47,
+    "homeMoneyline": 475,
+    "awayMoneyline": -700
+   },
+   {
+    "provider": "DraftKings",
+    "spread": 14,
+    "spreadOpen": 18.5,
+    "total": 45.5,
+    "homeMoneyline": 440,
+    "awayMoneyline": -600
+   },
+   {
+    "provider": "William Hill (New Jersey)",
+    "spread": 14,
+    "total": 44.5
+   }
+  ]
+ },
+ {
+  "id": 401520281,
+  "season": 2023,
+  "week": 5,
+  "seasonType": "regular",
+  "startsAt": "2023-09-30T23:30:00.000Z",
+  "completed": true,
+  "neutralSite": false,
+  "conferenceGame": true,
+  "homeTeam": "Iowa",
+  "awayTeam": "Michigan State",
+  "homeConference": "Big Ten",
+  "awayConference": "Big Ten",
+  "homeClassification": "fbs",
+  "awayClassification": "fbs",
+  "homePoints": 26,
+  "awayPoints": 16,
+  "homeElo": 1639,
+  "awayElo": 1468,
+  "lines": [
+   {
+    "provider": "Bovada",
+    "spread": -12,
+    "spreadOpen": -10,
+    "total": 36.5,
+    "totalOpen": 36,
+    "homeMoneyline": -470,
+    "awayMoneyline": 345
+   },
+   {
+    "provider": "DraftKings",
+    "spread": -12.5,
+    "spreadOpen": -11.5,
+    "total": 36.5,
+    "totalOpen": 36.5,
+    "homeMoneyline": -470,
+    "awayMoneyline": 360
+   },
+   {
+    "provider": "William Hill (New Jersey)",
+    "spread": -10,
+    "total": 36.5
+   }
+  ]
+ },
+ {
+  "id": 401520282,
+  "season": 2023,
+  "week": 5,
+  "seasonType": "regular",
+  "startsAt": "2023-09-30T16:00:00.000Z",
+  "completed": true,
+  "neutralSite": false,
+  "conferenceGame": true,
+  "homeTeam": "Kentucky",
+  "awayTeam": "Florida",
+  "homeConference": "SEC",
+  "awayConference": "SEC",
+  "homeClassification": "fbs",
+  "awayClassification": "fbs",
+  "homePoints": 33,
+  "awayPoints": 14,
+  "homeElo": 1675,
+  "awayElo": 1601,
+  "lines": [
+   {
+    "provider": "Bovada",
+    "spread": -2.5,
+    "spreadOpen": -3,
+    "total": 46.5,
+    "totalOpen": 46,
+    "homeMoneyline": -140,
+    "awayMoneyline": 120
+   },
+   {
+    "provider": "DraftKings",
+    "spread": -1.5,
+    "spreadOpen": -3.5,
+    "total": 45,
+    "homeMoneyline": -122,
+    "awayMoneyline": 102
+   },
+   {
+    "provider": "William Hill (New Jersey)",
+    "spread": -1,
+    "total": 44
+   }
+  ]
+ },
+ {
+  "id": 401520283,
+  "season": 2023,
+  "week": 5,
+  "seasonType": "regular",
+  "startsAt": "2023-09-30T19:30:00.000Z",
+  "completed": true,
+  "neutralSite": false,
+  "conferenceGame": true,
+  "homeTeam": "Maryland",
+  "awayTeam": "Indiana",
+  "homeConference": "Big Ten",
+  "awayConference": "Big Ten",
+  "homeClassification": "fbs",
+  "awayClassification": "fbs",
+  "homePoints": 44,
+  "awayPoints": 17,
+  "homeElo": 1687,
+  "awayElo": 1397,
+  "lines": [
+   {
+    "provider": "Bovada",
+    "spread": -14,
+    "spreadOpen": -14.5,
+    "total": 50,
+    "totalOpen": 50,
+    "homeMoneyline": -625,
+    "awayMoneyline": 430
+   },
+   {
+    "provider": "DraftKings",
+    "spread": -14,
+    "spreadOpen": -14,
+    "total": 50,
+    "totalOpen": 50.5,
+    "homeMoneyline": -650,
+    "awayMoneyline": 470
+   },
+   {
+    "provider": "William Hill (New Jersey)",
+    "spread": -14.5,
+    "total": 50
+   }
+  ]
+ },
+ {
+  "id": 401520284,
+  "season": 2023,
+  "week": 5,
+  "seasonType": "regular",
+  "startsAt": "2023-09-30T16:00:00.000Z",
+  "completed": true,
+  "neutralSite": false,
+  "conferenceGame": false,
+  "homeTeam": "Minnesota",
+  "awayTeam": "Louisiana",
+  "homeConference": "Big Ten",
+  "awayConference": "Sun Belt",
+  "homeClassification": "fbs",
+  "awayClassification": "fbs",
+  "homePoints": 35,
+  "awayPoints": 24,
+  "homeElo": 1635,
+  "awayElo": 1558,
+  "lines": [
+   {
+    "provider": "Bovada",
+    "spread": -10,
+    "spreadOpen": -9.5,
+    "total": 47.5,
+    "totalOpen": 47
+   },
+   {
+    "provider": "DraftKings",
+    "spread": -11,
+    "spreadOpen": -12.5,
+    "total": 48.5,
+    "totalOpen": 47.5,
+    "homeMoneyline": -440,
+    "awayMoneyline": 340
+   },
+   {
+    "provider": "William Hill (New Jersey)",
+    "spread": -9.5,
+    "total": 49
+   }
+  ]
+ },
+ {
+  "id": 401520285,
+  "season": 2023,
+  "week": 5,
+  "seasonType": "regular",
+  "startsAt": "2023-10-01T01:00:00.000Z",
+  "completed": true,
+  "neutralSite": false,
+  "conferenceGame": true,
+  "homeTeam": "Mississippi State",
+  "awayTeam": "Alabama",
+  "homeConference": "SEC",
+  "awayConference": "SEC",
+  "homeClassification": "fbs",
+  "awayClassification": "fbs",
+  "homePoints": 17,
+  "awayPoints": 40,
+  "homeElo": 1551,
+  "awayElo": 1959,
+  "lines": [
+   {
+    "provider": "Bovada",
+    "spread": 14,
+    "spreadOpen": 15,
+    "total": 46.5,
+    "totalOpen": 48.5,
+    "homeMoneyline": 430,
+    "awayMoneyline": -625
+   },
+   {
+    "provider": "DraftKings",
+    "spread": 14.5,
+    "spreadOpen": 11.5,
+    "total": 47,
+    "homeMoneyline": 500,
+    "awayMoneyline": -700
+   },
+   {
+    "provider": "William Hill (New Jersey)",
+    "spread": 16.5,
+    "total": 45
+   }
+  ]
+ },
+ {
+  "id": 401520286,
+  "season": 2023,
+  "week": 5,
+  "seasonType": "regular",
+  "startsAt": "2023-09-30T19:30:00.000Z",
+  "completed": true,
+  "neutralSite": false,
+  "conferenceGame": true,
+  "homeTeam": "Nebraska",
+  "awayTeam": "Michigan",
+  "homeConference": "Big Ten",
+  "awayConference": "Big Ten",
+  "homeClassification": "fbs",
+  "awayClassification": "fbs",
+  "homePoints": 7,
+  "awayPoints": 45,
+  "homeElo": 1483,
+  "awayElo": 1953,
+  "lines": [
+   {
+    "provider": "Bovada",
+    "spread": 17.5,
+    "total": 40,
+    "totalOpen": 40.5,
+    "homeMoneyline": 575,
+    "awayMoneyline": -900
+   },
+   {
+    "provider": "DraftKings",
+    "spread": 17,
+    "spreadOpen": 18,
+    "total": 39,
+    "homeMoneyline": 625,
+    "awayMoneyline": -950
+   },
+   {
+    "provider": "William Hill (New Jersey)",
+    "spread": 17,
+    "total": 39.5
+   }
+  ]
+ },
+ {
+  "id": 401520287,
+  "season": 2023,
+  "week": 5,
+  "seasonType": "regular",
+  "startsAt": "2023-09-30T16:00:00.000Z",
+  "completed": true,
+  "neutralSite": false,
+  "conferenceGame": true,
+  "homeTeam": "Northwestern",
+  "awayTeam": "Penn State",
+  "homeConference": "Big Ten",
+  "awayConference": "Big Ten",
+  "homeClassification": "fbs",
+  "awayClassification": "fbs",
+  "homePoints": 13,
+  "awayPoints": 41,
+  "homeElo": 1357,
+  "awayElo": 1931,
+  "lines": [
+   {
+    "provider": "Bovada",
+    "spread": 25.5,
+    "spreadOpen": 25.5,
+    "total": 46,
+    "totalOpen": 46,
+    "homeMoneyline": 1100,
+    "awayMoneyline": -3300
+   },
+   {
+    "provider": "DraftKings",
+    "spread": 27,
+    "spreadOpen": 25.5,
+    "total": 46,
+    "totalOpen": 46,
+    "homeMoneyline": 1600,
+    "awayMoneyline": -4000
+   },
+   {
+    "provider": "William Hill (New Jersey)",
+    "spread": 27,
+    "total": 48
+   }
+  ]
+ },
+ {
+  "id": 401752717,
+  "season": 2025,
+  "week": 5,
+  "seasonType": "regular",
+  "startsAt": "2025-09-27T16:00:00.000Z",
+  "completed": true,
+  "neutralSite": false,
+  "conferenceGame": false,
+  "homeTeam": "Arkansas",
+  "awayTeam": "Notre Dame",
+  "homeConference": "SEC",
+  "awayConference": "FBS Independents",
+  "homeClassification": "fbs",
+  "awayClassification": "fbs",
+  "homePoints": 13,
+  "awayPoints": 56,
+  "homeElo": 1677,
+  "awayElo": 2126,
+  "lines": [
+   {
+    "provider": "Bovada",
+    "spread": 5,
+    "spreadOpen": 6,
+    "total": 63.5,
+    "totalOpen": 64.5,
+    "homeMoneyline": 185,
+    "awayMoneyline": -225
+   },
+   {
+    "provider": "DraftKings",
+    "spread": 5.5,
+    "spreadOpen": 10.5,
+    "total": 64.5,
+    "homeMoneyline": 180,
+    "awayMoneyline": -218
+   },
+   {
+    "provider": "ESPN Bet",
+    "spread": 5.5,
+    "spreadOpen": 6.5,
+    "total": 62.5,
+    "totalOpen": 58.5,
+    "homeMoneyline": 170,
+    "awayMoneyline": -200
+   }
+  ]
+ },
+ {
+  "id": 401752718,
+  "season": 2025,
+  "week": 5,
+  "seasonType": "regular",
+  "startsAt": "2025-09-27T23:30:00.000Z",
+  "completed": true,
+  "neutralSite": false,
+  "conferenceGame": true,
+  "homeTeam": "Georgia",
+  "awayTeam": "Alabama",
+  "homeConference": "SEC",
+  "awayConference": "SEC",
+  "homeClassification": "fbs",
+  "awayClassification": "fbs",
+  "homePoints": 21,
+  "awayPoints": 24,
+  "homeElo": 2043,
+  "awayElo": 1948,
+  "lines": [
+   {
+    "provider": "Bovada",
+    "spread": -2,
+    "spreadOpen": -3,
+    "total": 54,
+    "totalOpen": 53.5,
+    "homeMoneyline": -160,
+    "awayMoneyline": 135
+   },
+   {
+    "provider": "DraftKings",
+    "spread": -2.5,
+    "spreadOpen": -4,
+    "total": 53.5,
+    "homeMoneyline": -142,
+    "awayMoneyline": 120
+   },
+   {
+    "provider": "ESPN Bet",
+    "spread": -2.5,
+    "spreadOpen": -4,
+    "total": 52.5,
+    "totalOpen": 52.5,
+    "homeMoneyline": -130,
+    "awayMoneyline": 110
+   }
+  ]
+ },
+ {
+  "id": 401752719,
+  "season": 2025,
+  "week": 5,
+  "seasonType": "regular",
+  "startsAt": "2025-09-27T19:30:00.000Z",
+  "completed": true,
+  "neutralSite": false,
+  "conferenceGame": true,
+  "homeTeam": "Ole Miss",
+  "awayTeam": "LSU",
+  "homeConference": "SEC",
+  "awayConference": "SEC",
+  "homeClassification": "fbs",
+  "awayClassification": "fbs",
+  "homePoints": 24,
+  "awayPoints": 19,
+  "homeElo": 1981,
+  "awayElo": 1747,
+  "lines": [
+   {
+    "provider": "Bovada",
+    "spread": -2.5,
+    "spreadOpen": -1.5,
+    "total": 58,
+    "totalOpen": 55.5,
+    "homeMoneyline": -125,
+    "awayMoneyline": 105
+   },
+   {
+    "provider": "DraftKings",
+    "spread": -2.5,
+    "spreadOpen": 2.5,
+    "total": 57.5,
+    "homeMoneyline": -142,
+    "awayMoneyline": 120
+   },
+   {
+    "provider": "ESPN Bet",
+    "spread": -3.5,
+    "spreadOpen": 2,
+    "total": 58.5,
+    "totalOpen": 56.5,
+    "homeMoneyline": -140,
+    "awayMoneyline": 120
+   }
+  ]
+ },
+ {
+  "id": 401752720,
+  "season": 2025,
+  "week": 5,
+  "seasonType": "regular",
+  "startsAt": "2025-09-27T20:15:00.000Z",
+  "completed": true,
+  "neutralSite": false,
+  "conferenceGame": true,
+  "homeTeam": "Mississippi State",
+  "awayTeam": "Tennessee",
+  "homeConference": "SEC",
+  "awayConference": "SEC",
+  "homeClassification": "fbs",
+  "awayClassification": "fbs",
+  "homePoints": 34,
+  "awayPoints": 41,
+  "homeElo": 1512,
+  "awayElo": 1838,
+  "lines": [
+   {
+    "provider": "Bovada",
+    "spread": 7.5,
+    "spreadOpen": 9,
+    "total": 63.5,
+    "totalOpen": 62.5,
+    "homeMoneyline": 235,
+    "awayMoneyline": -285
+   },
+   {
+    "provider": "DraftKings",
+    "spread": 7.5,
+    "spreadOpen": 10,
+    "total": 63.5,
+    "homeMoneyline": 235,
+    "awayMoneyline": -290
+   },
+   {
+    "provider": "ESPN Bet",
+    "spread": 7.5,
+    "spreadOpen": 8.5,
+    "total": 63.5,
+    "totalOpen": 62.5,
+    "homeMoneyline": 220,
+    "awayMoneyline": -270
+   }
+  ]
+ },
+ {
+  "id": 401752722,
+  "season": 2025,
+  "week": 5,
+  "seasonType": "regular",
+  "startsAt": "2025-09-27T23:45:00.000Z",
+  "completed": true,
+  "neutralSite": false,
+  "conferenceGame": true,
+  "homeTeam": "South Carolina",
+  "awayTeam": "Kentucky",
+  "homeConference": "SEC",
+  "awayConference": "SEC",
+  "homeClassification": "fbs",
+  "awayClassification": "fbs",
+  "homePoints": 35,
+  "awayPoints": 13,
+  "homeElo": 1638,
+  "awayElo": 1557,
+  "lines": [
+   {
+    "provider": "Bovada",
+    "spread": -5,
+    "spreadOpen": -6.5,
+    "total": 47,
+    "totalOpen": 47,
+    "homeMoneyline": -225,
+    "awayMoneyline": 185
+   },
+   {
+    "provider": "DraftKings",
+    "spread": -5.5,
+    "spreadOpen": -6,
+    "total": 46.5,
+    "homeMoneyline": -218,
+    "awayMoneyline": 180
+   },
+   {
+    "provider": "ESPN Bet",
+    "spread": -6.5,
+    "spreadOpen": -6.5,
+    "total": 46.5,
+    "totalOpen": 47.5,
+    "homeMoneyline": -200,
+    "awayMoneyline": 170
+   }
+  ]
+ },
+ {
+  "id": 401752724,
+  "season": 2025,
+  "week": 5,
+  "seasonType": "regular",
+  "startsAt": "2025-09-27T19:30:00.000Z",
+  "completed": true,
+  "neutralSite": false,
+  "conferenceGame": true,
+  "homeTeam": "Texas A&M",
+  "awayTeam": "Auburn",
+  "homeConference": "SEC",
+  "awayConference": "SEC",
+  "homeClassification": "fbs",
+  "awayClassification": "fbs",
+  "homePoints": 16,
+  "awayPoints": 10,
+  "homeElo": 1749,
+  "awayElo": 1680,
+  "lines": [
+   {
+    "provider": "Bovada",
+    "spread": -6.5,
+    "spreadOpen": -7,
+    "total": 51.5,
+    "totalOpen": 51.5,
+    "homeMoneyline": -240,
+    "awayMoneyline": 200
+   },
+   {
+    "provider": "DraftKings",
+    "spread": -6.5,
+    "spreadOpen": -6.5,
+    "total": 51.5,
+    "homeMoneyline": -238,
+    "awayMoneyline": 195
+   },
+   {
+    "provider": "ESPN Bet",
+    "spread": -6.5,
+    "spreadOpen": -6.5,
+    "total": 51.5,
+    "totalOpen": 46.5,
+    "homeMoneyline": -225,
+    "awayMoneyline": 190
+   }
+  ]
+ },
+ {
+  "id": 401752725,
+  "season": 2025,
+  "week": 5,
+  "seasonType": "regular",
+  "startsAt": "2025-09-27T16:45:00.000Z",
+  "completed": true,
+  "neutralSite": false,
+  "conferenceGame": false,
+  "homeTeam": "Vanderbilt",
+  "awayTeam": "Utah State",
+  "homeConference": "SEC",
+  "awayConference": "Mountain West",
+  "homeClassification": "fbs",
+  "awayClassification": "fbs",
+  "homePoints": 55,
+  "awayPoints": 35,
+  "homeElo": 1741,
+  "awayElo": 1442,
+  "lines": [
+   {
+    "provider": "Bovada",
+    "spread": -23,
+    "spreadOpen": -22.5,
+    "total": 57.5,
+    "totalOpen": 59.5,
+    "homeMoneyline": -2000,
+    "awayMoneyline": 950
+   },
+   {
+    "provider": "DraftKings",
+    "spread": -23.5,
+    "spreadOpen": -21.5,
+    "total": 57.5,
+    "homeMoneyline": -2100,
+    "awayMoneyline": 1100
+   },
+   {
+    "provider": "ESPN Bet",
+    "spread": -24.5,
+    "spreadOpen": -22.5,
+    "total": 58.5,
+    "totalOpen": 59.5,
+    "homeMoneyline": -2000,
+    "awayMoneyline": 1000
+   }
+  ]
+ },
+ {
+  "id": 401752849,
+  "season": 2025,
+  "week": 5,
+  "seasonType": "regular",
+  "startsAt": "2025-09-27T16:00:00.000Z",
+  "completed": true,
+  "neutralSite": false,
+  "conferenceGame": true,
+  "homeTeam": "Minnesota",
+  "awayTeam": "Rutgers",
+  "homeConference": "Big Ten",
+  "awayConference": "Big Ten",
+  "homeClassification": "fbs",
+  "awayClassification": "fbs",
+  "homePoints": 31,
+  "awayPoints": 28,
+  "homeElo": 1593,
+  "awayElo": 1583,
+  "lines": [
+   {
+    "provider": "Bovada",
+    "spread": -4,
+    "spreadOpen": -5.5,
+    "total": 51.5,
+    "totalOpen": 51.5,
+    "homeMoneyline": -220,
+    "awayMoneyline": 180
+   },
+   {
+    "provider": "DraftKings",
+    "spread": -3.5,
+    "spreadOpen": -4.5,
+    "total": 51.5,
+    "homeMoneyline": -175,
+    "awayMoneyline": 145
+   },
+   {
+    "provider": "ESPN Bet",
+    "spread": -3.5,
+    "spreadOpen": -3.5,
+    "total": 51.5,
+    "homeMoneyline": -175,
+    "awayMoneyline": 150
+   }
+  ]
+ },
+ {
+  "id": 401752850,
+  "season": 2025,
+  "week": 5,
+  "seasonType": "regular",
+  "startsAt": "2025-09-27T16:00:00.000Z",
+  "completed": true,
+  "neutralSite": false,
+  "conferenceGame": true,
+  "homeTeam": "Illinois",
+  "awayTeam": "USC",
+  "homeConference": "Big Ten",
+  "awayConference": "Big Ten",
+  "homeClassification": "fbs",
+  "awayClassification": "fbs",
+  "homePoints": 34,
+  "awayPoints": 32,
+  "homeElo": 1567,
+  "awayElo": 1869,
+  "lines": [
+   {
+    "provider": "Bovada",
+    "spread": 6.5,
+    "spreadOpen": 6.5,
+    "total": 62,
+    "totalOpen": 58.5,
+    "homeMoneyline": 200,
+    "awayMoneyline": -240
+   },
+   {
+    "provider": "DraftKings",
+    "spread": 6.5,
+    "spreadOpen": 1.5,
+    "total": 62.5,
+    "homeMoneyline": 205,
+    "awayMoneyline": -250
+   },
+   {
+    "provider": "ESPN Bet",
+    "spread": 6.5,
+    "spreadOpen": 1.5,
+    "total": 62.5,
+    "totalOpen": 56.5,
+    "homeMoneyline": 195,
+    "awayMoneyline": -230
+   }
+  ]
+ },
+ {
+  "id": 401752851,
+  "season": 2025,
+  "week": 5,
+  "seasonType": "regular",
+  "startsAt": "2025-09-27T19:30:00.000Z",
+  "completed": true,
+  "neutralSite": false,
+  "conferenceGame": true,
+  "homeTeam": "Northwestern",
+  "awayTeam": "UCLA",
+  "homeConference": "Big Ten",
+  "awayConference": "Big Ten",
+  "homeClassification": "fbs",
+  "awayClassification": "fbs",
+  "homePoints": 17,
+  "awayPoints": 14,
+  "homeElo": 1411,
+  "awayElo": 1331,
+  "lines": [
+   {
+    "provider": "Bovada",
+    "spread": -6,
+    "spreadOpen": -6.5,
+    "total": 46,
+    "totalOpen": 46,
+    "homeMoneyline": -220,
+    "awayMoneyline": 190
+   },
+   {
+    "provider": "DraftKings",
+    "spread": -6,
+    "spreadOpen": -5.5,
+    "total": 45.5,
+    "homeMoneyline": -218,
+    "awayMoneyline": 180
+   },
+   {
+    "provider": "ESPN Bet",
+    "spread": -6.5,
+    "spreadOpen": -6.5,
+    "total": 46.5,
+    "totalOpen": 45.5,
+    "homeMoneyline": -200,
+    "awayMoneyline": 170
+   }
+  ]
+ },
+ {
+  "id": 401752852,
+  "season": 2025,
+  "week": 5,
+  "seasonType": "regular",
+  "startsAt": "2025-09-27T19:30:00.000Z",
+  "completed": true,
+  "neutralSite": false,
+  "conferenceGame": true,
+  "homeTeam": "Washington",
+  "awayTeam": "Ohio State",
+  "homeConference": "Big Ten",
+  "awayConference": "Big Ten",
+  "homeClassification": "fbs",
+  "awayClassification": "fbs",
+  "homePoints": 6,
+  "awayPoints": 24,
+  "homeElo": 1676,
+  "awayElo": 2010,
+  "lines": [
+   {
+    "provider": "Bovada",
+    "spread": 9,
+    "spreadOpen": 9.5,
+    "total": 53.5,
+    "totalOpen": 52.5,
+    "homeMoneyline": 260,
+    "awayMoneyline": -320
+   },
+   {
+    "provider": "DraftKings",
+    "spread": 9.5,
+    "spreadOpen": 13.5,
+    "total": 52.5,
+    "homeMoneyline": 295,
+    "awayMoneyline": -375
+   },
+   {
+    "provider": "ESPN Bet",
+    "spread": 9.5,
+    "spreadOpen": 11.5,
+    "total": 52.5,
+    "totalOpen": 48.5,
+    "homeMoneyline": 290,
+    "awayMoneyline": -380
+   }
+  ]
+ },
+ {
+  "id": 401752853,
+  "season": 2025,
+  "week": 5,
+  "seasonType": "regular",
+  "startsAt": "2025-09-27T19:30:00.000Z",
+  "completed": true,
+  "neutralSite": false,
+  "conferenceGame": true,
+  "homeTeam": "Iowa",
+  "awayTeam": "Indiana",
+  "homeConference": "Big Ten",
+  "awayConference": "Big Ten",
+  "homeClassification": "fbs",
+  "awayClassification": "fbs",
+  "homePoints": 15,
+  "awayPoints": 20,
+  "homeElo": 1733,
+  "awayElo": 2010,
+  "lines": [
+   {
+    "provider": "Bovada",
+    "spread": 9.5,
+    "spreadOpen": 7.5,
+    "total": 47.5,
+    "totalOpen": 50,
+    "homeMoneyline": 240,
+    "awayMoneyline": -290
+   },
+   {
+    "provider": "DraftKings",
+    "spread": 9.5,
+    "spreadOpen": 3,
+    "total": 47.5,
+    "homeMoneyline": 270,
+    "awayMoneyline": -340
+   },
+   {
+    "provider": "ESPN Bet",
+    "spread": 8.5,
+    "spreadOpen": 2.5,
+    "total": 47.5,
+    "totalOpen": 48.5,
+    "homeMoneyline": 260,
+    "awayMoneyline": -320
+   }
+  ]
+ }
+]

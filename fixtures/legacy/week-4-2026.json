@@ -1,0 +1,29 @@
+{
+  "snapshot": {
+    "id": "cmug72y3i0000l804ppt81x9o",
+    "fetchedAt": "2026-09-25T00:00:32.895Z",
+    "games": [
+      { "id": "2e454a12c5301843ab7ec1a1eaf4f237", "away": "Navy Midshipmen", "home": "UAB Blazers", "startsAt": "2026-09-25T23:00:00.000Z", "quotes": [{ "book": "pinnacle", "side": "home", "american": 211, "bookTitle": "Pinnacle" }, { "book": "pinnacle", "side": "away", "american": -255, "bookTitle": "Pinnacle" }] },
+      { "id": "775ad63a769838c1e1da423293c9c60d", "away": "Northwestern Wildcats", "home": "Indiana Hoosiers", "startsAt": "2026-09-26T00:00:00.000Z", "quotes": [{ "book": "pinnacle", "side": "home", "american": -1601, "bookTitle": "Pinnacle" }, { "book": "pinnacle", "side": "away", "american": 894, "bookTitle": "Pinnacle" }] },
+      { "id": "48683523200ecdbeb09a2e6eb0d0a1f7", "away": "Clemson Tigers", "home": "California Golden Bears", "startsAt": "2026-09-26T02:30:00.000Z", "quotes": [{ "book": "pinnacle", "side": "home", "american": -102, "bookTitle": "Pinnacle" }, { "book": "pinnacle", "side": "away", "american": -112, "bookTitle": "Pinnacle" }] }
+    ],
+    "legs": [
+      { "ev": 0.1587890733661312, "book": "draftkings", "fair": 0.09656575611384427, "side": "Northwestern Wildcats", "gameId": "775ad63a769838c1e1da423293c9c60d", "decimal": 12, "american": 1100, "bookTitle": "DraftKings" },
+      { "ev": 0.03588693872218118, "book": "unibet_nl", "fair": 0.3092199817081138, "side": "UAB Blazers", "gameId": "2e454a12c5301843ab7ec1a1eaf4f237", "decimal": 3.35, "american": 235, "bookTitle": "Unibet (NL)" },
+      { "ev": 0.0164961128186587, "book": "betfair_ex_eu", "fair": 0.4887000542397397, "side": "California Golden Bears", "gameId": "48683523200ecdbeb09a2e6eb0d0a1f7", "decimal": 2.08, "american": 108, "bookTitle": "Betfair" }
+    ]
+  },
+  "cfbGames": [
+    { "id": 401862778, "homeTeam": "UAB", "awayTeam": "Navy", "startsAt": "2026-09-25T23:00:00.000Z", "season": 2026, "seasonType": "regular", "week": 4, "homePoints": 24, "awayPoints": 20 },
+    { "id": 401858461, "homeTeam": "Indiana", "awayTeam": "Northwestern", "startsAt": "2026-09-26T00:00:00.000Z", "season": 2026, "seasonType": "regular", "week": 4, "homePoints": 29, "awayPoints": 23 },
+    { "id": 401858234, "homeTeam": "California", "awayTeam": "Clemson", "startsAt": "2026-09-26T02:30:00.000Z", "season": 2026, "seasonType": "regular", "week": 4, "homePoints": 10, "awayPoints": 24 }
+  ],
+  "teams": [
+    { "school": "California", "mascot": "Golden Bears", "alternateNames": ["CAL", "California"] },
+    { "school": "Clemson", "mascot": "Tigers", "alternateNames": ["CLEM", "Clemson"] },
+    { "school": "Indiana", "mascot": "Hoosiers", "alternateNames": ["IU", "Indiana"] },
+    { "school": "Navy", "mascot": "Midshipmen", "alternateNames": ["NAVY", "Navy"] },
+    { "school": "Northwestern", "mascot": "Wildcats", "alternateNames": ["NU", "Northwestern"] },
+    { "school": "UAB", "mascot": "Blazers", "alternateNames": ["Alabama-Birmingham", "UAB"] }
+  ]
+}

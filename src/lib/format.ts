@@ -3,9 +3,21 @@ export const formatAmerican = (american: number): string => {
   return rounded > 0 ? `+${rounded}` : `${rounded}`;
 };
 
-export const pct = (value: number): string => `${(value * 100).toFixed(1)}%`;
+export const formatLine = (line: number): string => (line > 0 ? `+${line}` : line === 0 ? 'PK' : `${line}`);
 
-export const unitPl = (value: number): string => {
-  const rounded = value.toFixed(2);
-  return value > 0 ? `+${rounded}u` : `${rounded}u`;
-};
+export const pct = (value: number, digits = 1): string => `${(value * 100).toFixed(digits)}%`;
+
+export const signedPct = (value: number, digits = 1): string => `${value > 0 ? '+' : ''}${(value * 100).toFixed(digits)}%`;
+
+export const units = (value: number): string => `${value > 0 ? '+' : ''}${value.toFixed(2)}u`;
+
+export const tone = (value: number): 'pos' | 'neg' | undefined => (value > 0 ? 'pos' : value < 0 ? 'neg' : undefined);
+
+export const shortDate = (date: Date): string =>
+  date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', timeZone: 'America/New_York' });
+
+export const kickoff = (date: Date): string =>
+  date.toLocaleString('en-US', { weekday: 'short', hour: 'numeric', minute: '2-digit', timeZone: 'America/New_York' });
+
+export const weekLabel = (seasonType: string, week: number): string =>
+  seasonType === 'postseason' ? 'Bowls' : `Week ${week}`;

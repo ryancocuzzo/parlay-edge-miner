@@ -1,15 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import {
-  americanToDecimal,
-  devig,
-  formatReport,
-  Game,
-  impliedProbability,
-  parlaysFromLegs,
-  priceGame,
-  priceSlate,
-  Quote,
-} from './edge';
+import { americanToDecimal, devig, Game, impliedProbability, priceGame, priceSlate, Quote } from './edge';
 
 const quote = (book: string, title: string, side: 'home' | 'away', american: number): Quote => ({
   book,
@@ -77,64 +67,20 @@ describe('priceGame', () => {
   });
 });
 
-describe('parlays', () => {
-  const now = new Date('2026-09-21T15:00:00Z');
-
-  const plusMoney = (side: 'home' | 'away'): Quote => quote('draftkings', 'DraftKings', side, 150);
-
-  it('parlays +EV legs from different games and drops same-game pairs', () => {
+describe('priceSlate', () => {
+  it('keeps +EV legs for games starting inside the window, best EV first', () => {
+    const now = new Date('2026-09-21T15:00:00Z');
     const slate = priceSlate(
       [
-        game('a', new Date('2026-09-21T20:00:00Z'), [...evenSharp(), plusMoney('home'), plusMoney('away')]),
-        game('b', new Date('2026-09-21T23:00:00Z'), [...evenSharp(), plusMoney('home'), plusMoney('away')]),
-        game('later', new Date('2026-09-23T20:00:00Z'), [...evenSharp(), plusMoney('home')]),
+        game('a', new Date('2026-09-21T20:00:00Z'), [...evenSharp(), quote('draftkings', 'DraftKings', 'home', 150)]),
+        game('b', new Date('2026-09-21T23:00:00Z'), [...evenSharp(), quote('fanduel', 'FanDuel', 'away', 120)]),
+        game('later', new Date('2026-09-23T20:00:00Z'), [...evenSharp(), quote('draftkings', 'DraftKings', 'home', 150)]),
       ],
       now,
     );
 
     expect(slate.gamesInWindow).toBe(2);
     expect(slate.pricedGames).toBe(2);
-    expect(slate.legs).toHaveLength(4);
-    expect(slate.parlays.every((parlay) => new Set(parlay.legs.map((leg) => leg.gameId)).size === parlay.legs.length)).toBe(true);
-    expect(slate.parlays.filter((parlay) => parlay.legs.length === 2)).toHaveLength(4);
-    expect(slate.parlays.filter((parlay) => parlay.legs.length === 3)).toHaveLength(0);
-    expect(slate.parlays[0].decimal).toBeCloseTo(6.25);
-    expect(slate.parlays[0].fair).toBeCloseTo(0.25);
-    expect(slate.parlays[0].ev).toBeCloseTo(0.5625);
-  });
-
-  it('does not parlay a losing leg', () => {
-    const leg = {
-      gameId: 'a',
-      side: 'A',
-      book: 'draftkings',
-      bookTitle: 'DraftKings',
-      american: -200,
-      decimal: 1.5,
-      fair: 0.5,
-      ev: -0.25,
-    };
-    expect(parlaysFromLegs([leg, { ...leg, gameId: 'b', side: 'B' }])).toEqual([]);
-  });
-});
-
-describe('formatReport', () => {
-  it('shows both sides of a game as an arb', () => {
-    const now = new Date('2026-09-21T15:00:00Z');
-    const slate = priceSlate(
-      [
-        game('a', new Date('2026-09-21T20:00:00Z'), [
-          ...evenSharp(),
-          quote('draftkings', 'DraftKings', 'home', 150),
-          quote('fanduel', 'FanDuel', 'away', 150),
-        ]),
-      ],
-      now,
-    );
-    const report = formatReport(slate);
-    expect(report.startsWith('Arbs')).toBe(true);
-    expect(report).toContain('a Home +150 DraftKings');
-    expect(report).toContain('a Away +150 FanDuel');
-    expect(report).toContain('No +EV parlays');
+    expect(slate.legs.map((leg) => leg.side)).toEqual(['a Home', 'b Away']);
   });
 });
