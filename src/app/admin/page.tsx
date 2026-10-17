@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { notFound, redirect } from 'next/navigation';
 import { revalidatePath } from 'next/cache';
-import { addAllowlist, findAllowlisted, listAllowlist, removeAllowlist } from '@/allowlist';
+import { addAllowlist, findAllowlisted, listAllowlist, MAX_USERS, removeAllowlist } from '@/allowlist';
 import { requireUser } from '@/auth';
 import { Stat } from '@/components/strategy/stats';
 import { latestRemaining } from '@/data/usage';
@@ -64,7 +64,10 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
       </section>
 
       <section className="panel">
-        <h2>Allowlist</h2>
+        <h2>
+          Users <span className="mono">{users.length} / {MAX_USERS}</span>
+        </h2>
+        <p className="fine">Anyone who signs in with Google joins automatically until all {MAX_USERS} spots are taken. Removing someone frees their spot.</p>
         <ul className="allowlist">
           {users.map((user) => (
             <li key={user.id}>

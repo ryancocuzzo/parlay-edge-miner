@@ -51,7 +51,7 @@ function ToolPart({ part, onEdit }: { part: Part; onEdit: (spec: StrategySpec) =
     const output = part.output;
     return (
       <details className="tool-line">
-        <summary>Studied {label} in training seasons</summary>
+        <summary>Studied {label} in 2019–23 games</summary>
         {'quintiles' in output && output.quintiles && (
           <ul className="quintiles">
             {output.quintiles.map((q, i) => (

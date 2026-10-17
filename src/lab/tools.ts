@@ -22,10 +22,10 @@ const compactSummary = (s: Summary) => ({
 
 const compactReport = (report: BacktestReport) => ({
   verdict: report.verdict,
-  train: compactSummary(report.splits.train),
-  holdout: compactSummary(report.splits.holdout),
-  live: compactSummary(report.splits.live),
-  outOfSample: compactSummary(report.outOfSample),
+  buildSeasons: compactSummary(report.splits.train),
+  blindTest: compactSummary(report.splits.holdout),
+  thisSeason: compactSummary(report.splits.live),
+  blindTestTotal: compactSummary(report.outOfSample),
   bySeason: report.bySeason.map((s) => ({ season: s.season, bets: s.bets, roi: round(s.roi) })),
   breakdowns: report.breakdowns.map((b) => ({ title: b.title, rows: b.rows.map((r) => ({ label: r.label, bets: r.bets, roi: round(r.roi) })) })),
   candidates: report.candidates,
@@ -36,7 +36,7 @@ const filterSchema = z.object({ feature: z.enum(Object.keys(FEATURES) as [Featur
 
 export const labTools = (actor: string) => ({
   getDataCatalog: tool({
-    description: 'Lists the features strategies can use, data coverage by season and market, the train/holdout/live split, and the legacy strategy record.',
+    description: 'Lists the features strategies can use, data coverage by season and market, which seasons are build seasons vs blind test, and the legacy strategy record.',
     inputSchema: z.object({}),
     execute: async () => {
       const [{ games }, legacy] = await Promise.all([
@@ -49,7 +49,6 @@ export const labTools = (actor: string) => ({
         const has = (pick: (l: (typeof games)[number]['lines'][number]) => unknown) => inSeason.filter((g) => g.lines.some(pick)).length;
         return {
           season,
-          split: splitFor(season),
           games: inSeason.length,
           completed: inSeason.filter((g) => g.completed).length,
           withMoneyline: has((l) => l.homeMoneyline !== undefined),
@@ -64,7 +63,11 @@ export const labTools = (actor: string) => ({
         books: BOOKS,
         conferences: CONFERENCES,
         features: Object.entries(FEATURES).map(([key, f]) => ({ key, ...f })),
-        splits: { train: `≤ ${TRAIN_LAST_SEASON}`, holdout: `${TRAIN_LAST_SEASON + 1}–${HOLDOUT_LAST_SEASON}`, live: `${HOLDOUT_LAST_SEASON + 1}+` },
+        seasons: {
+          buildSeasons: `≤ ${TRAIN_LAST_SEASON}`,
+          blindTest: `${TRAIN_LAST_SEASON + 1}–${HOLDOUT_LAST_SEASON}`,
+          thisSeason: `${HOLDOUT_LAST_SEASON + 1}+`,
+        },
         coverage,
         legacyParlays: parlays && { twoLeg: compactSummary(parlays.twoLeg), threeLeg: compactSummary(parlays.threeLeg) },
       };
@@ -73,7 +76,7 @@ export const labTools = (actor: string) => ({
 
   featureDistribution: tool({
     description:
-      'Training-split-only (never holdout) distribution of one feature for a market, optionally after filters: quantiles, plus record and ROI by quintile. Use it to pick sensible thresholds.',
+      'Build-seasons-only (never blind test) distribution of one feature for a market, optionally after filters: quantiles, plus record and ROI by quintile. Use it to pick sensible thresholds.',
     inputSchema: z.object({
       market: z.enum(MARKETS),
       feature: filterSchema.shape.feature,
@@ -109,7 +112,7 @@ export const labTools = (actor: string) => ({
         count: rows.length,
         quantiles: { p10: at(0.1), p25: at(0.25), p50: at(0.5), p75: at(0.75), p90: at(0.9) },
         quintiles,
-        note: 'Every candidate bet in training seasons, before picking a top N per week.',
+        note: 'Every candidate bet in build seasons, before picking a top N per week.',
       };
     },
   }),

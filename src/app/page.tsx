@@ -19,7 +19,7 @@ export default async function StrategiesPage() {
       <div className="page-head">
         <div>
           <h1>Strategies</h1>
-          <p className="lede">Every strategy and every pick, graded against final scores. Ranked by the worst case of each strategy’s 95% range.</p>
+          <p className="lede">Every strategy and every pick, graded against final scores. Ranked by each strategy’s worst likely ROI, so lucky small samples don’t float to the top.</p>
         </div>
         <Link href="/lab" className="button cta">
           + Build a strategy
@@ -42,7 +42,7 @@ export default async function StrategiesPage() {
               <div className="card-rows">
                 {strategy.backtest && (
                   <div className="card-row">
-                    <span className="row-label">Backtest · out of sample</span>
+                    <span className="row-label">Blind test · 2024 on</span>
                     <span className="mono">{record(strategy.backtest.outOfSample)}</span>
                     <span className={`mono ${tone(strategy.backtest.outOfSample.roi) ?? ''}`}>{signedPct(strategy.backtest.outOfSample.roi)}</span>
                     <CiBar summary={strategy.backtest.outOfSample} />

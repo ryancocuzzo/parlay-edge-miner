@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { EquityCurve, PickItem, record, RuleChips, SplitRow, SummaryStats, VerdictBadge } from '@/components/strategy/stats';
+import { EquityCurve, HowToRead, PickItem, record, RuleChips, SplitRow, SplitRows, SummaryStats, VerdictBadge } from '@/components/strategy/stats';
 import { kickoff, shortDate, signedPct, tone, units, weekLabel } from '@/lib/format';
 import { summarize, verdictFor, type Summary } from '@/strategy/engine';
 import type { LegacyPick } from '@/strategy/legacy';
@@ -168,10 +168,9 @@ const BacktestTab = ({ strategy }: { strategy: StrategyDetail }) => {
           <VerdictBadge verdict={report.verdict} />
         </div>
         <p className="section-note">{report.verdict.label}.</p>
-        <SplitRow label="Training" sub="2019–2023 · tuned here" summary={report.splits.train} />
-        <SplitRow label="Holdout" sub="2024–2025 · unseen" summary={report.splits.holdout} />
-        <SplitRow label="Live season" sub="2026 · unseen" summary={report.splits.live} />
+        <SplitRows splits={report.splits} />
         <EquityCurve series={report.series} />
+        <HowToRead />
         <Link href={`/backtests/${strategy.backtestRun.id}`} className="button secondary full">
           Audit every backtest pick →
         </Link>
@@ -248,7 +247,7 @@ export default async function StrategyPage({ params, searchParams }: { params: P
         <h1>{strategy.name}</h1>
         <p className="lede">{strategy.summary}</p>
         <p className="headline mono">
-          {strategy.report ? 'Out of sample' : 'Real record'} {record(headline)} · <span className={tone(headline.roi)}>{signedPct(headline.roi)} ROI</span> ·{' '}
+          {strategy.report ? 'Blind test' : 'Real record'} {record(headline)} · <span className={tone(headline.roi)}>{signedPct(headline.roi)} ROI</span> ·{' '}
           <span className={tone(headline.units)}>{units(headline.units)}</span>
         </p>
       </header>

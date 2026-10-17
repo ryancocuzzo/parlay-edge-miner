@@ -1,5 +1,5 @@
 import { prisma } from '@/lib/prisma';
-import { summarize, type BacktestReport } from './engine';
+import { reviveReport, summarize } from './engine';
 import type { LegacyMeta } from './service';
 import { strategySpecSchema } from './spec';
 
@@ -13,7 +13,7 @@ export const listStrategies = async () => {
     where: { archivedAt: null },
     orderBy: { createdAt: 'asc' },
     include: {
-      backtestRun: { select: { report: true } },
+      backtestRun: { select: { spec: true, report: true } },
       picks: { select: { result: true, profit: true, price: true } },
       boards: { orderBy: { generatedAt: 'desc' }, take: 1 },
     },
@@ -26,7 +26,7 @@ export const listStrategies = async () => {
     createdBy: strategy.createdBy ?? undefined,
     live: gradedSummary(strategy.picks),
     open: strategy.picks.filter((p) => !p.result).length,
-    backtest: strategy.backtestRun ? (strategy.backtestRun.report as unknown as BacktestReport) : undefined,
+    backtest: strategy.backtestRun ? reviveReport(strategySpecSchema.parse(strategy.backtestRun.spec), strategy.backtestRun.report) : undefined,
     latestBoard: strategy.boards[0],
   }));
 };
@@ -35,7 +35,7 @@ export const strategyDetail = async (slug: string) => {
   const strategy = await prisma.strategy.findUnique({
     where: { slug },
     include: {
-      backtestRun: { select: { id: true, report: true, createdAt: true } },
+      backtestRun: { select: { id: true, spec: true, report: true, createdAt: true } },
       boards: { orderBy: { generatedAt: 'desc' } },
       picks: {
         orderBy: [{ season: 'desc' }, { week: 'desc' }, { rank: 'asc' }],
@@ -50,7 +50,7 @@ export const strategyDetail = async (slug: string) => {
     ...strategy,
     spec: strategy.spec ? strategySpecSchema.parse(strategy.spec) : undefined,
     meta: (strategy.meta ?? {}) as LegacyMeta,
-    report: strategy.backtestRun ? (strategy.backtestRun.report as unknown as BacktestReport) : undefined,
+    report: strategy.backtestRun ? reviveReport(strategySpecSchema.parse(strategy.backtestRun.spec), strategy.backtestRun.report) : undefined,
     live: gradedSummary(strategy.picks),
   };
 };

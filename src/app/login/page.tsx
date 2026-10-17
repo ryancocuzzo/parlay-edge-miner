@@ -1,8 +1,10 @@
+import Link from 'next/link';
 import { redirect } from 'next/navigation';
+import { MAX_USERS } from '@/allowlist';
 import { auth, signIn } from '@/auth';
 
 const ERRORS: Record<string, string> = {
-  AccessDenied: 'That Google account is not on the allowlist. Ask the admin to add it.',
+  AccessDenied: `All ${MAX_USERS} spots are taken. Ask the admin to free one up.`,
   Configuration: 'Sign-in is misconfigured on the server. Check the Google OAuth settings.',
 };
 
@@ -32,7 +34,9 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
             Continue with Google
           </button>
         </form>
-        <p className="fine">Invite only. Your Google email must be on the allowlist.</p>
+        <p className="fine">
+          Open to the first {MAX_USERS} people. <Link href="/privacy">Privacy</Link>
+        </p>
       </div>
     </div>
   );

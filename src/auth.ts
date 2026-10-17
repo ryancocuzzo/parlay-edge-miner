@@ -1,5 +1,5 @@
 import NextAuth from 'next-auth';
-import { findAllowlisted } from './allowlist';
+import { admitUser } from './allowlist';
 import { authConfig } from './auth.config';
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
@@ -7,7 +7,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   callbacks: {
     ...authConfig.callbacks,
     async signIn({ user }) {
-      return Boolean(user.email && (await findAllowlisted(user.email)));
+      return Boolean(user.email && (await admitUser(user.email)));
     },
   },
 });

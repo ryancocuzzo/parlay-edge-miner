@@ -158,13 +158,13 @@ export const summarize = (picks: Array<Pick<GradedPick, 'result' | 'profit' | 'p
 
 export const verdictFor = (summary: Summary): Verdict => {
   if (summary.bets < MIN_OUT_OF_SAMPLE_BETS) {
-    return { level: 'thin', label: `Only ${summary.bets} out-of-sample bets — too few to judge` };
+    return { level: 'thin', label: `Only ${summary.bets} blind-test bets, too few to judge` };
   }
-  if (summary.roiLow > 0) return { level: 'proven', label: 'Profitable out of sample (95% CI above zero)' };
-  if (summary.roiHigh < 0) return { level: 'losing', label: 'Loses money out of sample (95% CI below zero)' };
+  if (summary.roiLow > 0) return { level: 'proven', label: 'Profitable in the blind test, even at the low end of the likely range' };
+  if (summary.roiHigh < 0) return { level: 'losing', label: 'Loses money in the blind test, even at the high end of the likely range' };
   return summary.roi > 0
-    ? { level: 'promising', label: 'Positive out of sample, but not statistically proven' }
-    : { level: 'unproven', label: 'No edge out of sample' };
+    ? { level: 'promising', label: 'Up in the blind test, but it could still be luck' }
+    : { level: 'unproven', label: 'No edge in the blind test' };
 };
 
 const groupBy = <T>(items: T[], key: (item: T) => string): Map<string, T[]> =>
@@ -198,7 +198,7 @@ const breakdownsFor = (spec: StrategySpec, picks: GradedPick[]): BacktestReport[
 };
 
 const warningsFor = (spec: StrategySpec): string[] => [
-  ...(spec.market === 'moneyline' ? ['Moneylines exist from 2021 on (DraftKings from 2023), so moneyline training covers 2021–2023 only.'] : []),
+  ...(spec.market === 'moneyline' ? ['Moneylines exist from 2021 on (DraftKings from 2023), so moneyline build seasons are 2021–23 only.'] : []),
   ...(spec.market !== 'moneyline' ? ['Spreads and totals are graded at -110 against the closing consensus line.'] : []),
   ...([...spec.filters.map((f) => f.feature), ...spec.score.map((s) => s.feature)].some((f) => f.startsWith('elo'))
     ? ['Elo features only exist for FBS vs FBS games.']
@@ -243,6 +243,11 @@ export const runBacktest = (spec: StrategySpec, games: DatasetGame[]) => {
     warnings: warningsFor(spec),
   };
   return { report, picks };
+};
+
+export const reviveReport = (spec: StrategySpec, stored: unknown): BacktestReport => {
+  const report = stored as BacktestReport;
+  return { ...report, verdict: verdictFor(report.outOfSample), warnings: warningsFor(spec) };
 };
 
 export const upcomingWeek = (games: DatasetGame[], now: Date): DatasetGame[] => {

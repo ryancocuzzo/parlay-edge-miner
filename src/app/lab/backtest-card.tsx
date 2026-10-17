@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useState, useTransition } from 'react';
-import { CiBar, EquityCurve, record, RuleChips, SplitRow, VerdictBadge } from '@/components/strategy/stats';
+import { CiBar, EquityCurve, HowToRead, record, RuleChips, SplitRows, VerdictBadge } from '@/components/strategy/stats';
 import { signedPct, tone } from '@/lib/format';
 import type { BacktestReport } from '@/strategy/engine';
 import type { StrategySpec } from '@/strategy/spec';
@@ -48,16 +48,16 @@ export function BacktestCard({
 
       <div className="bt-headline">
         <div>
-          <span className="stat-label">Out of sample</span>
+          <span className="stat-label">Blind test ROI</span>
           <span className={`bt-roi ${tone(oos.roi) ?? ''}`}>{signedPct(oos.roi)}</span>
           <span className="stat-sub">
-            {record(oos)} · {oos.bets} bets
+            {record(oos)} · {oos.bets} bets since 2024
           </span>
         </div>
         <div className="bt-ci">
           <CiBar summary={oos} />
           <span className="stat-sub">
-            95% range {signedPct(oos.roiLow, 0)} to {signedPct(oos.roiHigh, 0)}
+            Likely range {signedPct(oos.roiLow, 0)} to {signedPct(oos.roiHigh, 0)}
           </span>
         </div>
       </div>
@@ -65,11 +65,10 @@ export function BacktestCard({
       <EquityCurve series={report.series} height={80} />
 
       <details className="bt-more">
-        <summary>Splits & rules</summary>
-        <SplitRow label="Training" sub="2019–2023" summary={report.splits.train} />
-        <SplitRow label="Holdout" sub="2024–2025" summary={report.splits.holdout} />
-        <SplitRow label="Live" sub="2026" summary={report.splits.live} />
+        <summary>By season & rules</summary>
+        <SplitRows splits={report.splits} />
         <RuleChips spec={spec} />
+        <HowToRead />
       </details>
 
       {error && <p className="notice neg">{error}</p>}

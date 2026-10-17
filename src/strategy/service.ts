@@ -3,7 +3,7 @@ import { prisma } from '@/lib/prisma';
 import { buildTeamIndex, normalizeTeamName } from '../data/teams';
 import { gradeCandidate, type DatasetGame, type Selection } from './candidates';
 import { loadDataset } from './dataset';
-import { buildBoard, featureValues, runBacktest, summarize, type BacktestReport, type Summary } from './engine';
+import { buildBoard, featureValues, reviveReport, runBacktest, summarize, type BacktestReport, type Summary } from './engine';
 import {
   LEGACY_SLUG,
   legacyParlayRecord,
@@ -29,7 +29,7 @@ export const replayBacktest = async (runId: string) => {
   const run = await prisma.backtestRun.findUnique({ where: { id: runId }, include: { strategies: true } });
   if (!run) return undefined;
   const spec = strategySpecSchema.parse(run.spec);
-  const stored = run.report as unknown as BacktestReport;
+  const stored = reviveReport(spec, run.report);
   const { games, version } = await loadDataset();
   const { report, picks } = runBacktest(spec, games);
   const reproduced =

@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { notFound, redirect } from 'next/navigation';
 import { requireUser } from '@/auth';
-import { EquityCurve, PickItem, record, RuleChips, SplitRow, VerdictBadge } from '@/components/strategy/stats';
+import { EquityCurve, HowToRead, PickItem, record, RuleChips, SplitRow, SplitRows, splitLabel, VerdictBadge } from '@/components/strategy/stats';
 import { formatAmerican, formatLine, pct, shortDate, tone, units, weekLabel } from '@/lib/format';
 import { featureValues, splitFor, summarize, type GradedPick } from '@/strategy/engine';
 import { replayBacktest, saveStrategy } from '@/strategy/service';
@@ -51,8 +51,8 @@ export default async function BacktestPage({ params, searchParams }: { params: P
         <RuleChips spec={spec} />
         <p className={`proof ${reproduced ? 'ok' : 'warn'}`}>
           {reproduced
-            ? '✓ Reproduced: re-running these rules on today’s data gives the same training and holdout results as when this run was first saved.'
-            : `⚠ Training/holdout results differ from the stored run (stored holdout ${record(stored.splits.holdout)}, now ${record(report.splits.holdout)}). Historical data was revised after this run.`}
+            ? '✓ Reproduced: re-running these rules on today’s data gives the same 2019–25 results as when this run was first saved.'
+            : `⚠ 2019–25 results differ from the saved run (build seasons ${record(stored.splits.train)} → ${record(report.splits.train)}, blind test ${record(stored.splits.holdout)} → ${record(report.splits.holdout)}). Historical data was revised after this run.`}
         </p>
       </header>
 
@@ -72,18 +72,17 @@ export default async function BacktestPage({ params, searchParams }: { params: P
       )}
 
       <section className="panel">
-        <h2>Results by split</h2>
-        <p className="section-note">{report.verdict.label}. Only holdout and live seasons count toward the verdict.</p>
-        <SplitRow label="Training" sub="2019–2023 · tuned here" summary={report.splits.train} />
-        <SplitRow label="Holdout" sub="2024–2025 · unseen" summary={report.splits.holdout} />
-        <SplitRow label="Live season" sub="2026 · unseen" summary={report.splits.live} />
+        <h2>Results</h2>
+        <p className="section-note">{report.verdict.label}.</p>
+        <SplitRows splits={report.splits} />
         <EquityCurve series={report.series} />
+        <HowToRead />
       </section>
 
       <section className="panel">
         <h2>By season</h2>
         {report.bySeason.map((row) => (
-          <SplitRow key={row.season} label={String(row.season)} sub={splitFor(row.season)} summary={row} />
+          <SplitRow key={row.season} label={String(row.season)} sub={splitLabel(splitFor(row.season))} summary={row} />
         ))}
       </section>
 

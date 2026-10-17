@@ -1,7 +1,7 @@
 import type { NextAuthConfig } from 'next-auth';
 import Google from 'next-auth/providers/google';
 
-const PUBLIC_PATHS = ['/login', '/api/auth', '/api/cron'];
+const PUBLIC_PATHS = ['/login', '/privacy', '/api/auth', '/api/cron'];
 
 export const authConfig = {
   providers: [Google],

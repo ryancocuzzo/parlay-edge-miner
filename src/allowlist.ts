@@ -9,6 +9,20 @@ export const normalizeEmail = (email: string): string => {
 export const findAllowlisted = (email: string) =>
   prisma.allowlistUser.findUnique({ where: { email: normalizeEmail(email) } });
 
+export const MAX_USERS = 10;
+
+export const admitUser = (email: string): Promise<boolean> =>
+  prisma.$transaction(
+    async (tx) => {
+      const normalized = normalizeEmail(email);
+      if (await tx.allowlistUser.findUnique({ where: { email: normalized } })) return true;
+      if ((await tx.allowlistUser.count()) >= MAX_USERS) return false;
+      await tx.allowlistUser.create({ data: { email: normalized } });
+      return true;
+    },
+    { isolationLevel: 'Serializable' },
+  );
+
 export const listAllowlist = () => prisma.allowlistUser.findMany({ orderBy: [{ isAdmin: 'desc' }, { email: 'asc' }] });
 
 export const addAllowlist = (email: string, isAdmin: boolean) =>
