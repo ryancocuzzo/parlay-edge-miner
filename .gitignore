@@ -1,41 +1,12 @@
-# Node
 node_modules/
-
-# Environment variables
+dist/
+coverage/
+.next/
 .env
-
-# OS / Editor
-.DS_Store
-.idea/
-.vscode/
-
-# Yarn Berry specific
-.pnp.*
-.yarn/cache/
-.yarn/unplugged/
-.yarn/build-state.yml
-.yarn/install-state.gz
-
-# Turbo cache
-.turbo/
-
-# Terraform
-infra/terraform/.terraform/
-
-# Logs
-*.log
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-
-# Env files
 .env.*
-
-# TypeScript build info
+!.env.example
+.DS_Store
+*.log
 *.tsbuildinfo
-
-# Stray compiled artefacts (should only live in dist/)
-packages/**/src/**/*.js
-packages/**/src/**/*.d.ts
-apps/**/src/**/*.js
-apps/**/src/**/*.d.ts
+.vercel
+.env*

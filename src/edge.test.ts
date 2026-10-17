@@ -1,0 +1,140 @@
+import { describe, expect, it } from 'vitest';
+import {
+  americanToDecimal,
+  devig,
+  formatReport,
+  Game,
+  impliedProbability,
+  parlaysFromLegs,
+  priceGame,
+  priceSlate,
+  Quote,
+} from './edge';
+
+const quote = (book: string, title: string, side: 'home' | 'away', american: number): Quote => ({
+  book,
+  bookTitle: title,
+  side,
+  american,
+});
+
+const game = (id: string, startsAt: Date, quotes: Quote[]): Game => ({
+  id,
+  startsAt,
+  home: `${id} Home`,
+  away: `${id} Away`,
+  quotes,
+});
+
+const evenSharp = (): Quote[] => [
+  quote('pinnacle', 'Pinnacle', 'home', -110),
+  quote('pinnacle', 'Pinnacle', 'away', -110),
+];
+
+describe('american odds', () => {
+  it('converts positive and negative prices', () => {
+    expect(americanToDecimal(150)).toBeCloseTo(2.5);
+    expect(impliedProbability(150)).toBeCloseTo(0.4);
+    expect(americanToDecimal(-200)).toBeCloseTo(1.5);
+    expect(impliedProbability(-200)).toBeCloseTo(2 / 3);
+  });
+
+  it('rejects prices that are not American odds', () => {
+    expect(() => americanToDecimal(1.91)).toThrow('Invalid American odds');
+  });
+
+  it('removes the vig from a two-way market', () => {
+    expect(devig(impliedProbability(-110), impliedProbability(-110))).toEqual({ home: 0.5, away: 0.5 });
+  });
+});
+
+describe('priceGame', () => {
+  it('uses the sharp fair price and the best other American price', () => {
+    const priced = priceGame(
+      game('g', new Date(), [
+        ...evenSharp(),
+        quote('draftkings', 'DraftKings', 'home', 150),
+        quote('draftkings', 'DraftKings', 'away', -200),
+        quote('fanduel', 'FanDuel', 'home', 140),
+        quote('fanduel', 'FanDuel', 'away', -180),
+      ]),
+      'pinnacle',
+    );
+
+    expect(priced).toHaveLength(2);
+    const home = priced?.find((leg) => leg.side === 'g Home');
+    const away = priced?.find((leg) => leg.side === 'g Away');
+    expect(home).toMatchObject({ book: 'draftkings', american: 150, fair: 0.5 });
+    expect(home?.ev).toBeCloseTo(0.25);
+    expect(away).toMatchObject({ book: 'fanduel', american: -180 });
+    expect(away?.ev).toBeCloseTo(0.5 * (1 + 100 / 180) - 1);
+  });
+
+  it('returns undefined when the sharp book is missing a side', () => {
+    expect(
+      priceGame(game('g', new Date(), [quote('pinnacle', 'Pinnacle', 'home', -110)]), 'pinnacle'),
+    ).toBeUndefined();
+  });
+});
+
+describe('parlays', () => {
+  const now = new Date('2026-09-21T15:00:00Z');
+
+  const plusMoney = (side: 'home' | 'away'): Quote => quote('draftkings', 'DraftKings', side, 150);
+
+  it('parlays +EV legs from different games and drops same-game pairs', () => {
+    const slate = priceSlate(
+      [
+        game('a', new Date('2026-09-21T20:00:00Z'), [...evenSharp(), plusMoney('home'), plusMoney('away')]),
+        game('b', new Date('2026-09-21T23:00:00Z'), [...evenSharp(), plusMoney('home'), plusMoney('away')]),
+        game('later', new Date('2026-09-23T20:00:00Z'), [...evenSharp(), plusMoney('home')]),
+      ],
+      now,
+    );
+
+    expect(slate.gamesInWindow).toBe(2);
+    expect(slate.pricedGames).toBe(2);
+    expect(slate.legs).toHaveLength(4);
+    expect(slate.parlays.every((parlay) => new Set(parlay.legs.map((leg) => leg.gameId)).size === parlay.legs.length)).toBe(true);
+    expect(slate.parlays.filter((parlay) => parlay.legs.length === 2)).toHaveLength(4);
+    expect(slate.parlays.filter((parlay) => parlay.legs.length === 3)).toHaveLength(0);
+    expect(slate.parlays[0].decimal).toBeCloseTo(6.25);
+    expect(slate.parlays[0].fair).toBeCloseTo(0.25);
+    expect(slate.parlays[0].ev).toBeCloseTo(0.5625);
+  });
+
+  it('does not parlay a losing leg', () => {
+    const leg = {
+      gameId: 'a',
+      side: 'A',
+      book: 'draftkings',
+      bookTitle: 'DraftKings',
+      american: -200,
+      decimal: 1.5,
+      fair: 0.5,
+      ev: -0.25,
+    };
+    expect(parlaysFromLegs([leg, { ...leg, gameId: 'b', side: 'B' }])).toEqual([]);
+  });
+});
+
+describe('formatReport', () => {
+  it('shows both sides of a game as an arb', () => {
+    const now = new Date('2026-09-21T15:00:00Z');
+    const slate = priceSlate(
+      [
+        game('a', new Date('2026-09-21T20:00:00Z'), [
+          ...evenSharp(),
+          quote('draftkings', 'DraftKings', 'home', 150),
+          quote('fanduel', 'FanDuel', 'away', 150),
+        ]),
+      ],
+      now,
+    );
+    const report = formatReport(slate);
+    expect(report.startsWith('Arbs')).toBe(true);
+    expect(report).toContain('a Home +150 DraftKings');
+    expect(report).toContain('a Away +150 FanDuel');
+    expect(report).toContain('No +EV parlays');
+  });
+});

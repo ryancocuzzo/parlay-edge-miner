@@ -1,0 +1,12 @@
+{
+  "crons": [
+    {
+      "path": "/api/cron?job=all",
+      "schedule": "0 */6 * * *"
+    },
+    {
+      "path": "/api/cron?job=weekly",
+      "schedule": "0 12 * * 1"
+    }
+  ]
+}
