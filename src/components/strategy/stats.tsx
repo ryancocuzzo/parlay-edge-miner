@@ -90,6 +90,7 @@ export const EquityCurve = ({ series, height = 120 }: { series: Array<{ key: str
   const last = series.at(-1)!.units;
   return (
     <figure className="equity">
+      <span className={`equity-total mono ${tone(last) ?? ''}`}>{units(last)}</span>
       <svg viewBox={`0 0 ${width} ${height}`} preserveAspectRatio="none" aria-label="Cumulative units by week">
         <line x1={0} x2={width} y1={y(0)} y2={y(0)} className="equity-zero" />
         {markers.map((marker) => (
@@ -107,7 +108,6 @@ export const EquityCurve = ({ series, height = 120 }: { series: Array<{ key: str
             {marker.label}
           </span>
         ))}
-        <span className={tone(last)}>{units(last)}</span>
       </figcaption>
     </figure>
   );

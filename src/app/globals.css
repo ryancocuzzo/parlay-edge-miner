@@ -775,6 +775,13 @@ ul.notice {
   margin: 0.75rem 0;
 }
 
+.equity-total {
+  display: block;
+  text-align: right;
+  font-size: 0.74rem;
+  margin-bottom: 0.2rem;
+}
+
 .equity svg {
   width: 100%;
   height: 120px;
