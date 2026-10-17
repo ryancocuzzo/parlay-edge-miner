@@ -2,11 +2,11 @@ import { tool } from 'ai';
 import { z } from 'zod';
 import { prisma } from '@/lib/prisma';
 import { loadDataset } from '../strategy/dataset';
-import { splitFor, summarize, TRAIN_LAST_SEASON, HOLDOUT_LAST_SEASON, type BacktestReport, type Summary } from '../strategy/engine';
+import { inConferences, splitFor, summarize, TRAIN_LAST_SEASON, HOLDOUT_LAST_SEASON, type BacktestReport, type Summary } from '../strategy/engine';
 import { candidatesForGame, gradeCandidate } from '../strategy/candidates';
 import { LEGACY_SLUG } from '../strategy/legacy';
 import { recordBacktest, type LegacyMeta } from '../strategy/service';
-import { BOOKS, FEATURES, MARKETS, strategySpecSchema, strategySpecShape, type FeatureKey } from '../strategy/spec';
+import { BOOKS, CONFERENCES, FEATURES, MARKETS, strategySpecSchema, strategySpecShape, type FeatureKey } from '../strategy/spec';
 
 const round = (value: number, digits = 3) => Math.round(value * 10 ** digits) / 10 ** digits;
 
@@ -62,6 +62,7 @@ export const labTools = (actor: string) => ({
       return {
         markets: MARKETS,
         books: BOOKS,
+        conferences: CONFERENCES,
         features: Object.entries(FEATURES).map(([key, f]) => ({ key, ...f })),
         splits: { train: `≤ ${TRAIN_LAST_SEASON}`, holdout: `${TRAIN_LAST_SEASON + 1}–${HOLDOUT_LAST_SEASON}`, live: `${HOLDOUT_LAST_SEASON + 1}+` },
         coverage,
@@ -73,14 +74,20 @@ export const labTools = (actor: string) => ({
   featureDistribution: tool({
     description:
       'Training-split-only (never holdout) distribution of one feature for a market, optionally after filters: quantiles, plus record and ROI by quintile. Use it to pick sensible thresholds.',
-    inputSchema: z.object({ market: z.enum(MARKETS), feature: filterSchema.shape.feature, filters: z.array(filterSchema).max(8).optional() }),
-    execute: async ({ market, feature, filters = [] }) => {
+    inputSchema: z.object({
+      market: z.enum(MARKETS),
+      feature: filterSchema.shape.feature,
+      filters: z.array(filterSchema).max(8).optional(),
+      conferences: strategySpecShape.shape.conferences,
+      opponentConferences: strategySpecShape.shape.opponentConferences,
+    }),
+    execute: async ({ market, feature, filters = [], conferences, opponentConferences }) => {
       const { games } = await loadDataset();
       const training = games.filter((g) => g.completed && splitFor(g.season) === 'train');
       const byId = new Map(training.map((g) => [g.id, g]));
       const rows = training
         .flatMap((g) => candidatesForGame(g, market))
-        .filter((c) => c.features[feature] !== undefined)
+        .filter((c) => c.features[feature] !== undefined && inConferences({ conferences, opponentConferences }, c))
         .filter((c) => filters.every(({ feature: f, min, max }) => {
           const v = c.features[f];
           return v !== undefined && (min === undefined || v >= min) && (max === undefined || v <= max);

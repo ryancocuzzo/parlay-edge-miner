@@ -61,7 +61,15 @@ export type BacktestReport = {
 
 const MIN_OUT_OF_SAMPLE_BETS = 50;
 
+export const inConferences = (
+  { conferences, opponentConferences }: Pick<StrategySpec, 'conferences' | 'opponentConferences'>,
+  candidate: Candidate,
+): boolean =>
+  (!conferences || conferences.some((conference) => candidate.conferences.includes(conference))) &&
+  (!opponentConferences || opponentConferences.some((conference) => conference === candidate.opponentConference));
+
 const eligible = (spec: StrategySpec, candidate: Candidate): boolean =>
+  inConferences(spec, candidate) &&
   spec.filters.every(({ feature, min, max }) => {
     const value = candidate.features[feature];
     return value !== undefined && (min === undefined || value >= min) && (max === undefined || value <= max);
@@ -185,6 +193,7 @@ const breakdownsFor = (spec: StrategySpec, picks: GradedPick[]): BacktestReport[
       : table('Spread', (p) => bucket(p.line, [-14, -7.5, -0.5, 6.5, 13.5], ['≤ -14', '-13.5 to -7.5', '-7 to -0.5', '+0.5 to +6.5', '+7 to +13.5', '≥ +14'])),
     table('Home vs away', (p) => (p.features.isHome ? 'Home' : 'Away')),
     table('Favorite vs underdog', (p) => (p.features.isFavorite ? 'Favorite' : 'Underdog')),
+    table('Conference', (p) => p.conferences[0] ?? 'Unknown'),
   ];
 };
 

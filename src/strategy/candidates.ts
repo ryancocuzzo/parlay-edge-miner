@@ -30,8 +30,12 @@ export type DatasetGame = {
   awayPoints?: number;
   homeElo?: number;
   awayElo?: number;
+  homeForm?: TeamForm;
+  awayForm?: TeamForm;
   lines: GameLine[];
 };
+
+export type TeamForm = { lastMargin: number; streak: number };
 
 export type Selection = 'home' | 'away' | 'over' | 'under';
 
@@ -48,6 +52,8 @@ export type Candidate = {
   price: number;
   line?: number;
   provider: string;
+  conferences: string[];
+  opponentConference?: string;
   features: Partial<Record<FeatureKey, number>>;
 };
 
@@ -69,6 +75,26 @@ const median = (values: Array<number | undefined>): number | undefined => {
 
 export const weekKey = (game: { season: number; seasonType: string; week: number }): string =>
   `${game.season}-${game.seasonType}-${String(game.week).padStart(2, '0')}`;
+
+export const withTeamForm = (games: DatasetGame[]): DatasetGame[] => {
+  const latest = new Map<string, TeamForm>();
+  return [...games]
+    .sort((a, b) => a.startsAt.getTime() - b.startsAt.getTime())
+    .map((game) => {
+      const homeKey = `${game.season}:${game.homeTeam}`;
+      const awayKey = `${game.season}:${game.awayTeam}`;
+      const withForm = { ...game, homeForm: latest.get(homeKey), awayForm: latest.get(awayKey) };
+      if (game.completed && game.homePoints !== undefined && game.awayPoints !== undefined) {
+        const next = (form: TeamForm | undefined, margin: number): TeamForm => ({
+          lastMargin: margin,
+          streak: form && Math.sign(form.streak) === Math.sign(margin) ? form.streak + Math.sign(margin) : Math.sign(margin),
+        });
+        latest.set(homeKey, next(withForm.homeForm, game.homePoints - game.awayPoints));
+        latest.set(awayKey, next(withForm.awayForm, game.awayPoints - game.homePoints));
+      }
+      return withForm;
+    });
+};
 
 export const candidatesForGame = (game: DatasetGame, market: Market, books?: readonly string[]): Candidate[] => {
   const spread = median(game.lines.map((line) => line.spread));
@@ -100,6 +126,7 @@ export const candidatesForGame = (game: DatasetGame, market: Market, books?: rea
       price: STANDARD_PRICE,
       line: total,
       provider: 'consensus',
+      conferences: [game.homeConference, game.awayConference].filter((c): c is string => c !== undefined),
       features: { ...context, price: STANDARD_PRICE, total, totalMove, isOver: flag(selection === 'over') },
     }));
   }
@@ -115,6 +142,8 @@ export const candidatesForGame = (game: DatasetGame, market: Market, books?: rea
     const isHome = selection === 'home';
     const [team, opponent] = isHome ? [game.homeTeam, game.awayTeam] : [game.awayTeam, game.homeTeam];
     const [elo, oppElo] = isHome ? [game.homeElo, game.awayElo] : [game.awayElo, game.homeElo];
+    const [conference, oppConference] = isHome ? [game.homeConference, game.awayConference] : [game.awayConference, game.homeConference];
+    const [form, oppForm] = isHome ? [game.homeForm, game.awayForm] : [game.awayForm, game.homeForm];
     const sideSpread = spread === undefined ? undefined : isHome ? spread : -spread;
     const sideSpreadOpen = spreadOpen === undefined ? undefined : isHome ? spreadOpen : -spreadOpen;
     const eloDiff = elo === undefined || oppElo === undefined ? undefined : elo - oppElo;
@@ -130,19 +159,21 @@ export const candidatesForGame = (game: DatasetGame, market: Market, books?: rea
       eloProb,
       eloSpreadEdge:
         eloDiff === undefined || sideSpread === undefined ? undefined : eloDiff / ELO_POINTS_PER_POINT + sideSpread,
-      isPower: flag(POWER_CONFERENCES.has((isHome ? game.homeConference : game.awayConference) ?? '')),
-      opponentPower: flag(POWER_CONFERENCES.has((isHome ? game.awayConference : game.homeConference) ?? '')),
+      isPower: flag(POWER_CONFERENCES.has(conference ?? '')),
+      opponentPower: flag(POWER_CONFERENCES.has(oppConference ?? '')),
       fcsOpponent: flag((isHome ? game.awayClassification : game.homeClassification) === 'fcs'),
+      lastMargin: form?.lastMargin,
+      lostLast: form && flag(form.lastMargin < 0),
+      streak: form?.streak,
+      opponentLostLast: oppForm && flag(oppForm.lastMargin < 0),
     };
+    const sideShared = { ...shared, selection, team, opponent, conferences: conference ? [conference] : [], opponentConference: oppConference };
 
     if (market === 'spread') {
       if (sideSpread === undefined) return [];
       return [
         {
-          ...shared,
-          selection,
-          team,
-          opponent,
+          ...sideShared,
           price: STANDARD_PRICE,
           line: sideSpread,
           provider: 'consensus',
@@ -158,10 +189,7 @@ export const candidatesForGame = (game: DatasetGame, market: Market, books?: rea
     if (!best || marketProb === undefined) return [];
     return [
       {
-        ...shared,
-        selection,
-        team,
-        opponent,
+        ...sideShared,
         price: best.price,
         provider: best.provider,
         features: {

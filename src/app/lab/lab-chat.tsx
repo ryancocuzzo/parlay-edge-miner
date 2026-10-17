@@ -4,6 +4,7 @@ import { useChat } from '@ai-sdk/react';
 import { DefaultChatTransport, type InferUITools, type UIDataTypes, type UIMessage } from 'ai';
 import Link from 'next/link';
 import { useEffect, useRef, useState } from 'react';
+import Markdown from 'react-markdown';
 import { RuleChips } from '@/components/strategy/stats';
 import type { LabTools } from '@/lab/tools';
 import { FEATURES, strategySpecSchema, type StrategySpec } from '@/strategy/spec';
@@ -97,9 +98,11 @@ function Message({ message, onEdit }: { message: LabMessage; onEdit: (spec: Stra
     <div className="msg assistant">
       {message.parts.map((part, index) =>
         part.type === 'text' ? (
-          <p key={index} className="assistant-text">
-            {part.text}
-          </p>
+          <div key={index} className="assistant-text">
+            <Markdown allowedElements={['p', 'strong', 'em', 'code', 'ul', 'ol', 'li']} unwrapDisallowed>
+              {part.text}
+            </Markdown>
+          </div>
         ) : (
           <ToolPart key={index} part={part} onEdit={onEdit} />
         ),

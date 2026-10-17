@@ -116,6 +116,8 @@ export const EquityCurve = ({ series, height = 120 }: { series: Array<{ key: str
 export const RuleChips = ({ spec }: { spec: StrategySpec }) => (
   <div className="chips">
     <span className="chip chip-market">{spec.market}</span>
+    {spec.conferences && <span className="chip">{spec.conferences.join(', ')}</span>}
+    {spec.opponentConferences && <span className="chip">vs {spec.opponentConferences.join(', ')}</span>}
     {spec.filters.map((filter, index) => (
       <span key={index} className="chip">
         {describeFilter(filter)}

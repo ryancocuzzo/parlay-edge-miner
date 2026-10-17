@@ -5,6 +5,20 @@ export type Market = (typeof MARKETS)[number];
 
 export const BOOKS = ['DraftKings', 'Bovada', 'ESPN Bet'] as const;
 
+export const CONFERENCES = [
+  'ACC',
+  'American Athletic',
+  'Big 12',
+  'Big Ten',
+  'Conference USA',
+  'FBS Independents',
+  'Mid-American',
+  'Mountain West',
+  'Pac-12',
+  'SEC',
+  'Sun Belt',
+] as const;
+
 export const FEATURES = {
   price: { label: 'Price', unit: 'american', markets: MARKETS, description: 'American odds of the selection. Moneyline uses the best price among allowed books; spreads and totals are priced at -110.' },
   marketProb: { label: 'Market win prob', unit: 'prob', markets: ['moneyline'], description: 'No-vig win probability implied by the closing moneylines, averaged across books.' },
@@ -23,6 +37,10 @@ export const FEATURES = {
   isPower: { label: 'Power conference', unit: 'flag', markets: ['moneyline', 'spread'], description: '1 when the selection plays in the SEC, Big Ten, Big 12, ACC or Pac-12.' },
   opponentPower: { label: 'Opponent power conf.', unit: 'flag', markets: ['moneyline', 'spread'], description: '1 when the opponent plays in the SEC, Big Ten, Big 12, ACC or Pac-12.' },
   fcsOpponent: { label: 'FCS opponent', unit: 'flag', markets: ['moneyline', 'spread'], description: '1 when the opponent is an FCS team.' },
+  lastMargin: { label: 'Last game margin', unit: 'points', markets: ['moneyline', 'spread'], description: "Selection's point margin in its previous game this season. Negative = lost. Missing before a team's first game." },
+  lostLast: { label: 'Lost last game', unit: 'flag', markets: ['moneyline', 'spread'], description: '1 when the selection lost its previous game this season.' },
+  streak: { label: 'Streak', unit: 'games', markets: ['moneyline', 'spread'], description: 'Current win (+) or loss (−) streak this season. -2 = lost two straight.' },
+  opponentLostLast: { label: 'Opponent lost last game', unit: 'flag', markets: ['moneyline', 'spread'], description: '1 when the opponent lost its previous game this season.' },
   isOver: { label: 'Over', unit: 'flag', markets: ['total'], description: '1 for the over, 0 for the under.' },
   week: { label: 'Week', unit: 'week', markets: MARKETS, description: 'Season week number (postseason games count as week 20+).' },
 } as const satisfies Record<string, { label: string; unit: string; markets: readonly Market[]; description: string }>;
@@ -41,6 +59,16 @@ export const strategySpecShape = z.object({
   summary: z.string().trim().min(10).max(280).describe('One or two plain-English sentences describing the idea.'),
   market: z.enum(MARKETS),
   books: z.array(z.enum(BOOKS)).min(1).optional().describe('Moneyline price sources. Omit to line-shop across all.'),
+  conferences: z
+    .array(z.enum(CONFERENCES))
+    .min(1)
+    .optional()
+    .describe("Only bet on teams in these conferences (the team's conference that season). For totals, either team qualifies. Omit for all."),
+  opponentConferences: z
+    .array(z.enum(CONFERENCES))
+    .min(1)
+    .optional()
+    .describe('Only bet when the opponent is in these conferences, e.g. fading Big Ten teams. Moneyline and spread only.'),
   filters: z.array(filterSchema).max(8),
   score: z
     .array(z.object({ feature: z.enum(FEATURE_KEYS), weight: z.number().min(-5).max(5) }))
@@ -52,6 +80,9 @@ export const strategySpecShape = z.object({
 });
 
 export const strategySpecSchema = strategySpecShape.superRefine((spec, ctx) => {
+  if (spec.market === 'total' && spec.opponentConferences) {
+    ctx.addIssue({ code: 'custom', message: 'Opponent conferences only apply to moneyline and spread bets' });
+  }
   for (const filter of spec.filters) {
     if (filter.min === undefined && filter.max === undefined) {
       ctx.addIssue({ code: 'custom', message: `Filter on "${filter.feature}" needs min, max, or both` });

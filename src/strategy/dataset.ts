@@ -1,5 +1,5 @@
 import { prisma } from '@/lib/prisma';
-import type { DatasetGame } from './candidates';
+import { withTeamForm, type DatasetGame } from './candidates';
 
 let cached: { version: string; games: DatasetGame[] } | undefined;
 
@@ -32,6 +32,6 @@ export const loadDataset = async (): Promise<{ version: string; games: DatasetGa
       awayMoneyline: line.awayMoneyline ?? undefined,
     })),
   }));
-  cached = { version, games };
+  cached = { version, games: withTeamForm(games) };
   return cached;
 };

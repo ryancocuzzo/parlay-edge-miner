@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import gamesJson from '../../fixtures/cfbd/games.json';
-import { candidatesForGame, gradeCandidate, type DatasetGame } from './candidates';
+import { candidatesForGame, gradeCandidate, withTeamForm, type DatasetGame } from './candidates';
 import { prepareScorer, runBacktest, selectWeek, specHash, summarize, verdictFor } from './engine';
 import { strategySpecSchema, type StrategySpec } from './spec';
 
@@ -40,6 +40,45 @@ describe('candidatesForGame', () => {
     expect(draftKingsOnly.price).toBe(120);
     expect(home.features.marketProb! + away.features.marketProb!).toBeCloseTo(1);
     expect(away.features.isFavorite).toBe(0);
+  });
+});
+
+describe('team form', () => {
+  it("carries each team's previous result into its next game, never the same game's", () => {
+    const withForm = withTeamForm(games);
+    const georgiaWeek6 = withForm.find((g) => g.id === 401752728)!;
+    const illinoisWeek6 = withForm.find((g) => g.id === 401752861)!;
+
+    const georgia = candidatesForGame(georgiaWeek6, 'spread').find((c) => c.team === 'Georgia')!;
+    const kentucky = candidatesForGame(georgiaWeek6, 'spread').find((c) => c.team === 'Kentucky')!;
+    const illinois = candidatesForGame(illinoisWeek6, 'spread').find((c) => c.team === 'Illinois')!;
+
+    expect(georgia.features).toMatchObject({ lastMargin: -3, lostLast: 1, streak: -1, opponentLostLast: 1 });
+    expect(kentucky.features).toMatchObject({ lastMargin: -22, lostLast: 1 });
+    expect(illinois.features).toMatchObject({ lastMargin: 2, lostLast: 0, streak: 1 });
+    expect(illinois.features.opponentLostLast).toBeUndefined();
+    expect(withForm.find((g) => g.id === 401752718)!.homeForm).toBeUndefined();
+  });
+
+  it('limits a strategy to teams from the chosen conferences', () => {
+    const bigTenSpec: StrategySpec = { ...underdogEloSpec, market: 'spread', filters: [], score: [{ feature: 'spread', weight: 1 }], conferences: ['Big Ten'], picksPerWeek: 20 };
+    const week = games.filter((g) => g.season === 2023).flatMap((g) => candidatesForGame(g, 'spread'));
+
+    const picks = selectWeek(bigTenSpec, week, prepareScorer(bigTenSpec, week));
+
+    expect(picks.length).toBeGreaterThan(0);
+    expect(picks.every((p) => p.conferences[0] === 'Big Ten')).toBe(true);
+    expect(picks.map((p) => p.team)).toContain('Minnesota');
+  });
+
+  it('fades a conference by filtering on the opponent', () => {
+    const fadeBigTen: StrategySpec = { ...underdogEloSpec, market: 'spread', filters: [], score: [{ feature: 'spread', weight: 1 }], opponentConferences: ['Big Ten'], picksPerWeek: 20 };
+    const week = games.filter((g) => g.season === 2023).flatMap((g) => candidatesForGame(g, 'spread'));
+
+    const picks = selectWeek(fadeBigTen, week, prepareScorer(fadeBigTen, week));
+
+    expect(picks.map((p) => p.team)).toEqual(expect.arrayContaining(['Louisiana']));
+    expect(picks.every((p) => p.opponentConference === 'Big Ten')).toBe(true);
   });
 });
 
@@ -88,7 +127,7 @@ describe('selection and backtest', () => {
 
     expect(JSON.stringify(second)).toBe(JSON.stringify(first));
     expect(first.report.splits.train.bets).toBe(3);
-    expect(first.report.splits.holdout.bets).toBe(3);
+    expect(first.report.splits.holdout.bets).toBe(6);
     expect(first.report.splits.live.bets).toBe(0);
     expect(first.report.outOfSample.units).toBeCloseTo(
       first.picks.filter((p) => p.season > 2023).reduce((sum, p) => sum + p.profit, 0),

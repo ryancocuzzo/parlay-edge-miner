@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { FEATURES, MARKETS, strategySpecSchema, type FeatureKey, type Market, type StrategySpec } from '@/strategy/spec';
+import { CONFERENCES, FEATURES, MARKETS, strategySpecSchema, type FeatureKey, type Market, type StrategySpec } from '@/strategy/spec';
 
 const featuresFor = (market: Market) =>
   (Object.keys(FEATURES) as FeatureKey[]).filter((key) => (FEATURES[key].markets as readonly Market[]).includes(market));
@@ -16,6 +16,28 @@ const STARTER: StrategySpec = {
   score: [{ feature: 'eloSpreadEdge', weight: 1 }],
   picksPerWeek: 10,
 };
+
+type Conference = (typeof CONFERENCES)[number];
+
+function ConferencePicker({ legend, value, onChange, hint }: { legend: string; value?: Conference[]; onChange: (value?: Conference[]) => void; hint: string }) {
+  return (
+    <fieldset>
+      <legend>{legend}</legend>
+      <div className="chips">
+        {CONFERENCES.map((conference) => {
+          const selected = value?.includes(conference) ?? false;
+          const next = selected ? value!.filter((c) => c !== conference) : [...(value ?? []), conference];
+          return (
+            <button key={conference} type="button" className="secondary small" aria-pressed={selected} onClick={() => onChange(next.length ? next : undefined)}>
+              {conference}
+            </button>
+          );
+        })}
+      </div>
+      <p className="fine">{hint}</p>
+    </fieldset>
+  );
+}
 
 export function RuleEditor({ spec, onClose, onRun }: { spec?: StrategySpec; onClose: () => void; onRun: (spec: StrategySpec) => void }) {
   const dialog = useRef<HTMLDialogElement>(null);
@@ -35,6 +57,7 @@ export function RuleEditor({ spec, onClose, onRun }: { spec?: StrategySpec; onCl
     update({
       market,
       books: market === 'moneyline' ? draft.books : undefined,
+      opponentConferences: market === 'total' ? undefined : draft.opponentConferences,
       filters: draft.filters.filter((f) => allowed.has(f.feature)),
       score: score.length ? score : [{ feature: market === 'total' ? 'total' : 'spread', weight: 1 }],
     });
@@ -75,6 +98,21 @@ export function RuleEditor({ spec, onClose, onRun }: { spec?: StrategySpec; onCl
             ))}
           </div>
         </fieldset>
+
+        <ConferencePicker
+          legend="Team conference"
+          value={draft.conferences}
+          onChange={(conferences) => update({ conferences })}
+          hint={draft.market === 'total' ? 'None selected means every conference. For totals, either team counts.' : 'None selected means every conference.'}
+        />
+        {draft.market !== 'total' && (
+          <ConferencePicker
+            legend="Opponent conference"
+            value={draft.opponentConferences}
+            onChange={(opponentConferences) => update({ opponentConferences })}
+            hint="Use this to fade a conference."
+          />
+        )}
 
         <fieldset>
           <legend>Only bet when</legend>

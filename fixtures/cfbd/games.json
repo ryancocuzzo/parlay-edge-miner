@@ -1105,5 +1105,148 @@
     "awayMoneyline": -320
    }
   ]
+ },
+ {
+  "id": 401752726,
+  "season": 2025,
+  "week": 6,
+  "seasonType": "regular",
+  "startsAt": "2025-10-04T19:30:00.000Z",
+  "completed": true,
+  "neutralSite": false,
+  "conferenceGame": true,
+  "homeTeam": "Alabama",
+  "awayTeam": "Vanderbilt",
+  "homeConference": "SEC",
+  "awayConference": "SEC",
+  "homeClassification": "fbs",
+  "awayClassification": "fbs",
+  "homePoints": 30,
+  "awayPoints": 14,
+  "homeElo": 1958,
+  "awayElo": 1758,
+  "lines": [
+   {
+    "provider": "Bovada",
+    "spread": -13.5,
+    "spreadOpen": -10.5,
+    "total": 57.5,
+    "totalOpen": 56.5,
+    "homeMoneyline": -430,
+    "awayMoneyline": 320
+   },
+   {
+    "provider": "DraftKings",
+    "spread": -13.5,
+    "spreadOpen": -13.5,
+    "total": 57.5,
+    "homeMoneyline": -535,
+    "awayMoneyline": 400
+   },
+   {
+    "provider": "ESPN Bet",
+    "spread": -13.5,
+    "spreadOpen": -22.5,
+    "total": 58.5,
+    "totalOpen": 51.5,
+    "homeMoneyline": -550,
+    "awayMoneyline": 380
+   }
+  ]
+ },
+ {
+  "id": 401752728,
+  "season": 2025,
+  "week": 6,
+  "seasonType": "regular",
+  "startsAt": "2025-10-04T16:00:00.000Z",
+  "completed": true,
+  "neutralSite": false,
+  "conferenceGame": true,
+  "homeTeam": "Georgia",
+  "awayTeam": "Kentucky",
+  "homeConference": "SEC",
+  "awayConference": "SEC",
+  "homeClassification": "fbs",
+  "awayClassification": "fbs",
+  "homePoints": 35,
+  "awayPoints": 14,
+  "homeElo": 2033,
+  "awayElo": 1513,
+  "lines": [
+   {
+    "provider": "Bovada",
+    "spread": -20,
+    "spreadOpen": -21,
+    "total": 49,
+    "totalOpen": 48.5,
+    "homeMoneyline": -1800,
+    "awayMoneyline": 850
+   },
+   {
+    "provider": "DraftKings",
+    "spread": -19.5,
+    "spreadOpen": -20.5,
+    "total": 48.5,
+    "homeMoneyline": -1450,
+    "awayMoneyline": 850
+   },
+   {
+    "provider": "ESPN Bet",
+    "spread": -19.5,
+    "total": 49.5,
+    "totalOpen": 50.5,
+    "homeMoneyline": -1600,
+    "awayMoneyline": 800
+   }
+  ]
+ },
+ {
+  "id": 401752861,
+  "season": 2025,
+  "week": 6,
+  "seasonType": "regular",
+  "startsAt": "2025-10-04T16:00:00.000Z",
+  "completed": true,
+  "neutralSite": false,
+  "conferenceGame": true,
+  "homeTeam": "Purdue",
+  "awayTeam": "Illinois",
+  "homeConference": "Big Ten",
+  "awayConference": "Big Ten",
+  "homeClassification": "fbs",
+  "awayClassification": "fbs",
+  "homePoints": 27,
+  "awayPoints": 43,
+  "homeElo": 1325,
+  "awayElo": 1571,
+  "lines": [
+   {
+    "provider": "Bovada",
+    "spread": 7,
+    "spreadOpen": 10,
+    "total": 54.5,
+    "totalOpen": 55.5,
+    "homeMoneyline": 295,
+    "awayMoneyline": -390
+   },
+   {
+    "provider": "DraftKings",
+    "spread": 7,
+    "spreadOpen": 12.5,
+    "total": 54.5,
+    "homeMoneyline": 250,
+    "awayMoneyline": -310
+   },
+   {
+    "provider": "ESPN Bet",
+    "spread": 7.5,
+    "spreadOpen": 7.5,
+    "total": 55.5,
+    "totalOpen": 54.5,
+    "homeMoneyline": 260,
+    "awayMoneyline": -320
+   }
+  ]
  }
 ]
