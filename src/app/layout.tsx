@@ -1,14 +1,13 @@
 import type { Metadata, Viewport } from 'next';
 import Link from 'next/link';
-import { Barlow_Condensed, Source_Sans_3, IBM_Plex_Mono } from 'next/font/google';
+import { Geist, Geist_Mono } from 'next/font/google';
 import { findAllowlisted } from '@/allowlist';
 import { auth, signOut } from '@/auth';
-import { TabBar } from '@/components/nav';
+import { TabBar, TopNav } from '@/components/nav';
 import './globals.css';
 
-const display = Barlow_Condensed({ subsets: ['latin'], weight: ['600', '700'], variable: '--font-display' });
-const body = Source_Sans_3({ subsets: ['latin'], weight: ['400', '600', '700'], variable: '--font-body' });
-const mono = IBM_Plex_Mono({ subsets: ['latin'], weight: ['400', '500'], variable: '--font-mono' });
+const sans = Geist({ subsets: ['latin'], variable: '--font-sans' });
+const mono = Geist_Mono({ subsets: ['latin'], variable: '--font-mono' });
 
 export const metadata: Metadata = {
   title: 'NCAAF Edge',
@@ -19,7 +18,7 @@ export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
   viewportFit: 'cover',
-  themeColor: '#eef1f4',
+  themeColor: '#f6f7f9',
 };
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
@@ -28,19 +27,20 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const isAdmin = email ? (await findAllowlisted(email))?.isAdmin === true : false;
 
   return (
-    <html lang="en" className={`${display.variable} ${body.variable} ${mono.variable}`}>
+    <html lang="en" className={`${sans.variable} ${mono.variable}`}>
       <body className={email ? 'signed-in' : undefined}>
         <header className="top">
           <Link href="/" className="brand">
+            <span className="logo" aria-hidden="true">
+              <svg viewBox="0 0 24 24">
+                <path d="M4 17l5-5 4 3 7-8" />
+              </svg>
+            </span>
             NCAAF Edge
           </Link>
           {email && (
             <>
-              <nav className="topnav">
-                <Link href="/">Strategies</Link>
-                <Link href="/lab">Lab</Link>
-                {isAdmin && <Link href="/admin">Admin</Link>}
-              </nav>
+              <TopNav isAdmin={isAdmin} />
               <form
                 action={async () => {
                   'use server';

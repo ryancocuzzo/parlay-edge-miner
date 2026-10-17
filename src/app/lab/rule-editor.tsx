@@ -225,7 +225,7 @@ export function RuleEditor({ spec, onClose, onRun }: { spec?: StrategySpec; onCl
         <button type="button" className="secondary" onClick={() => dialog.current?.close()}>
           Cancel
         </button>
-        <button type="button" onClick={run}>
+        <button type="button" className="primary" onClick={run}>
           Run backtest
         </button>
       </footer>

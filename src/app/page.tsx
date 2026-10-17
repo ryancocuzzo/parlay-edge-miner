@@ -1,6 +1,6 @@
 import Link from 'next/link';
-import { CiBar, record, VerdictBadge } from '@/components/strategy/stats';
-import { signedPct, tone, units } from '@/lib/format';
+import { KeyNumbers, record, VerdictBadge } from '@/components/strategy/stats';
+import { tone, units } from '@/lib/format';
 import { verdictFor } from '@/strategy/engine';
 import { listStrategies } from '@/strategy/queries';
 
@@ -19,43 +19,41 @@ export default async function StrategiesPage() {
       <div className="page-head">
         <div>
           <h1>Strategies</h1>
-          <p className="lede">Every strategy and every pick, graded against final scores. Ranked by each strategy’s worst likely ROI, so lucky small samples don’t float to the top.</p>
+          <p className="lede">Betting ideas tested on seasons they never saw, then tracked pick by pick. Strongest evidence first, so lucky small samples don’t float to the top.</p>
         </div>
-        <Link href="/lab" className="button cta">
-          + Build a strategy
+        <Link href="/lab" className="button primary">
+          New strategy
         </Link>
       </div>
 
       {strategies.length === 0 && <p className="empty">No strategies yet. Build one in the Lab.</p>}
 
       <ol className="strategy-list">
-        {strategies.map((strategy, index) => (
+        {strategies.map((strategy) => (
           <li key={strategy.slug}>
             <Link href={`/strategies/${strategy.slug}`} className="strategy-card">
               <div className="card-top">
-                <span className="rank">{index + 1}</span>
-                <span className="kind">{strategy.kind === 'legacy' ? 'Original board' : 'Saved strategy'}</span>
                 <VerdictBadge verdict={strategy.verdict} />
+                <span className="kind">{strategy.kind === 'legacy' ? 'Original board' : 'Saved strategy'}</span>
               </div>
               <h2>{strategy.name}</h2>
               <p className="card-summary">{strategy.summary}</p>
-              <div className="card-rows">
+              <KeyNumbers summary={strategy.evidence} scope={strategy.backtest ? 'Blind test · 2024 on' : 'Real picks'} />
+              <div className="card-foot">
                 {strategy.backtest && (
-                  <div className="card-row">
-                    <span className="row-label">Blind test · 2024 on</span>
-                    <span className="mono">{record(strategy.backtest.outOfSample)}</span>
-                    <span className={`mono ${tone(strategy.backtest.outOfSample.roi) ?? ''}`}>{signedPct(strategy.backtest.outOfSample.roi)}</span>
-                    <CiBar summary={strategy.backtest.outOfSample} />
-                  </div>
+                  <span>
+                    Since saved:{' '}
+                    {strategy.live.bets ? (
+                      <span className="mono">
+                        {record(strategy.live)} · <span className={tone(strategy.live.units)}>{units(strategy.live.units)}</span>
+                      </span>
+                    ) : (
+                      'no results yet'
+                    )}
+                  </span>
                 )}
-                <div className="card-row">
-                  <span className="row-label">{strategy.kind === 'legacy' ? 'Real picks' : 'Tracked since saved'}</span>
-                  <span className="mono">{strategy.live.bets ? record(strategy.live) : 'no results yet'}</span>
-                  <span className={`mono ${tone(strategy.live.units) ?? ''}`}>{strategy.live.bets ? units(strategy.live.units) : ''}</span>
-                  {strategy.live.bets > 0 && <CiBar summary={strategy.live} />}
-                </div>
+                {strategy.open > 0 && <span className="card-link">{strategy.open} open picks →</span>}
               </div>
-              {strategy.open > 0 && <span className="card-foot">{strategy.open} open picks this week →</span>}
             </Link>
           </li>
         ))}

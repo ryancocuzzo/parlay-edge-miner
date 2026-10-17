@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { useEffect, useRef, useState } from 'react';
 import Markdown from 'react-markdown';
 import { RuleChips } from '@/components/strategy/stats';
+import { signedPct, tone } from '@/lib/format';
 import type { LabTools } from '@/lab/tools';
 import { FEATURES, strategySpecSchema, type StrategySpec } from '@/strategy/spec';
 import { BacktestCard } from './backtest-card';
@@ -53,17 +54,20 @@ function ToolPart({ part, onEdit }: { part: Part; onEdit: (spec: StrategySpec) =
       <details className="tool-line">
         <summary>Studied {label} in 2019–23 games</summary>
         {'quintiles' in output && output.quintiles && (
-          <ul className="quintiles">
-            {output.quintiles.map((q, i) => (
-              <li key={i}>
-                <span className="mono">
-                  {q.from} to {q.to}
-                </span>
-                <span className="mono">{q.record}</span>
-                <span className={`mono ${q.roi > 0 ? 'pos' : 'neg'}`}>{(q.roi * 100).toFixed(1)}%</span>
-              </li>
-            ))}
-          </ul>
+          <>
+            <p className="fine">Every 2019–23 bet, split into five equal groups by value.</p>
+            <ul className="quintiles">
+              {output.quintiles.map((q, i) => (
+                <li key={i}>
+                  <span className="mono">
+                    {q.from} to {q.to}
+                  </span>
+                  <span className="mono">{q.record}</span>
+                  <span className={`mono ${tone(q.roi) ?? ''}`}>{signedPct(q.roi)}</span>
+                </li>
+              ))}
+            </ul>
+          </>
         )}
       </details>
     );
@@ -96,6 +100,7 @@ function Message({ message, onEdit }: { message: LabMessage; onEdit: (spec: Stra
   }
   return (
     <div className="msg assistant">
+      <span className="msg-author">Analyst</span>
       {message.parts.map((part, index) =>
         part.type === 'text' ? (
           <div key={index} className="assistant-text">
@@ -154,9 +159,15 @@ export function LabChat({
         <h1>Lab</h1>
         <div className="lab-tools">
           <button type="button" className="secondary" onClick={() => setEditing({})}>
-            Rule editor
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M4 7h10M18 7h2M4 17h4M12 17h8M14 4v6M8 14v6" />
+            </svg>
+            Rules
           </button>
           <button type="button" className="secondary" onClick={() => setShowHistory((v) => !v)} aria-expanded={showHistory}>
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M12 7v5l3 2M21 12a9 9 0 1 1-9-9 9 9 0 0 1 9 9z" />
+            </svg>
             History
           </button>
         </div>
@@ -165,7 +176,7 @@ export function LabChat({
       {showHistory && (
         <nav className="history" aria-label="Previous chats">
           <Link href="/lab" className="history-new">
-            + New chat
+            New chat
           </Link>
           {threads.map((thread) => (
             <Link key={thread.id} href={`/lab?thread=${thread.id}`} className={thread.id === threadId ? 'active' : undefined}>
@@ -181,7 +192,22 @@ export function LabChat({
         {messages.length === 0 && (
           <div className="lab-empty">
             <h2>What should we test?</h2>
-            <p className="lede">Describe a betting idea in plain English. The analyst turns it into rules, backtests it on every week since 2019, and tells you honestly whether it holds up on seasons it never saw.</p>
+            <p className="lede">Describe a betting idea in plain English. Your analyst turns it into exact rules and tells you honestly whether it would have made money.</p>
+            <ol className="steps">
+              <li>
+                <strong>Describe</strong>
+                <span>an idea, like “home underdogs after a loss”</span>
+              </li>
+              <li>
+                <strong>Test</strong>
+                <span>rules are built on 2019–23, then run blind on 2024 onward</span>
+              </li>
+              <li>
+                <strong>Track</strong>
+                <span>save what holds up to get a weekly pick board</span>
+              </li>
+            </ol>
+            <p className="eyebrow">Try one</p>
             <div className="suggestions">
               {SUGGESTIONS.map((suggestion) => (
                 <button key={suggestion} type="button" className="suggestion" onClick={() => send(suggestion)}>
@@ -229,11 +255,15 @@ export function LabChat({
         />
         {busy ? (
           <button type="button" className="send stop" onClick={() => stop()} aria-label="Stop">
-            ■
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <rect x="7" y="7" width="10" height="10" rx="2" />
+            </svg>
           </button>
         ) : (
           <button type="submit" className="send" disabled={!input.trim()} aria-label="Send">
-            ↑
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M12 19V5M5 12l7-7 7 7" />
+            </svg>
           </button>
         )}
       </form>

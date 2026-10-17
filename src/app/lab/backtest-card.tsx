@@ -2,8 +2,7 @@
 
 import Link from 'next/link';
 import { useState, useTransition } from 'react';
-import { CiBar, EquityCurve, HowToRead, record, RuleChips, SplitRows, VerdictBadge } from '@/components/strategy/stats';
-import { signedPct, tone } from '@/lib/format';
+import { EquityCurve, HowToRead, KeyNumbers, RuleChips, SplitRows, VerdictBadge, VerdictNote } from '@/components/strategy/stats';
 import type { BacktestReport } from '@/strategy/engine';
 import type { StrategySpec } from '@/strategy/spec';
 import { saveStrategyFromRun } from './actions';
@@ -23,7 +22,6 @@ export function BacktestCard({
   const [savedSlug, setSavedSlug] = useState<string>();
   const [error, setError] = useState<string>();
   const [saving, startSaving] = useTransition();
-  const oos = report.outOfSample;
 
   const save = () =>
     startSaving(async () => {
@@ -39,44 +37,31 @@ export function BacktestCard({
   return (
     <article className="bt-card">
       <header>
-        <div>
-          <h3>{spec.name}</h3>
-          <p>{spec.summary}</p>
+        <div className="card-top">
+          <VerdictBadge verdict={report.verdict} />
+          <span className="kind">Backtest</span>
         </div>
-        <VerdictBadge verdict={report.verdict} />
+        <h3>{spec.name}</h3>
+        <p>{spec.summary}</p>
       </header>
 
-      <div className="bt-headline">
-        <div>
-          <span className="stat-label">Blind test ROI</span>
-          <span className={`bt-roi ${tone(oos.roi) ?? ''}`}>{signedPct(oos.roi)}</span>
-          <span className="stat-sub">
-            {record(oos)} · {oos.bets} bets since 2024
-          </span>
-        </div>
-        <div className="bt-ci">
-          <CiBar summary={oos} />
-          <span className="stat-sub">
-            Likely range {signedPct(oos.roiLow, 0)} to {signedPct(oos.roiHigh, 0)}
-          </span>
-        </div>
-      </div>
-
+      <KeyNumbers summary={report.outOfSample} scope="Blind test · 2024 on" />
+      <VerdictNote verdict={report.verdict} />
       <EquityCurve series={report.series} height={80} />
 
-      <details className="bt-more">
-        <summary>By season & rules</summary>
+      <details className="disclosure">
+        <summary>By period & rules</summary>
         <SplitRows splits={report.splits} />
         <RuleChips spec={spec} />
-        <HowToRead />
       </details>
+      <HowToRead />
 
       {error && <p className="notice neg">{error}</p>}
 
       <footer>
         {savedSlug ? (
-          <Link href={`/strategies/${savedSlug}`} className="button full">
-            Saved ✓ View strategy board →
+          <Link href={`/strategies/${savedSlug}`} className="button primary full">
+            Saved · View weekly board
           </Link>
         ) : confirming ? (
           <div className="confirm">
@@ -85,7 +70,7 @@ export function BacktestCard({
               <button type="button" className="secondary" onClick={() => setConfirming(false)} disabled={saving}>
                 Cancel
               </button>
-              <button type="button" onClick={save} disabled={saving}>
+              <button type="button" className="primary" onClick={save} disabled={saving}>
                 {saving ? 'Saving…' : 'Save'}
               </button>
             </div>
@@ -98,7 +83,7 @@ export function BacktestCard({
             <Link href={`/backtests/${runId}`} className="button secondary">
               Audit picks
             </Link>
-            <button type="button" onClick={() => setConfirming(true)}>
+            <button type="button" className="primary" onClick={() => setConfirming(true)}>
               Save
             </button>
           </div>

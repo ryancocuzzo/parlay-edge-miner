@@ -1,6 +1,18 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { EquityCurve, HowToRead, PickItem, record, RuleChips, SplitRow, SplitRows, SummaryStats, VerdictBadge } from '@/components/strategy/stats';
+import {
+  EquityCurve,
+  HowToRead,
+  KeyNumbers,
+  PickItem,
+  record,
+  RuleChips,
+  SplitRow,
+  SplitRows,
+  SummaryStats,
+  VerdictBadge,
+  VerdictNote,
+} from '@/components/strategy/stats';
 import { kickoff, shortDate, signedPct, tone, units, weekLabel } from '@/lib/format';
 import { summarize, verdictFor, type Summary } from '@/strategy/engine';
 import type { LegacyPick } from '@/strategy/legacy';
@@ -11,6 +23,7 @@ export const dynamic = 'force-dynamic';
 
 const TABS = ['board', 'record', 'backtest', 'rules'] as const;
 type Tab = (typeof TABS)[number];
+const TAB_LABELS: Record<Tab, string> = { board: 'This week', record: 'Track record', backtest: 'Backtest', rules: 'Rules' };
 
 const weekKeyOf = (pick: StrategyPickRow) => `${pick.season}-${pick.seasonType}-${String(pick.week).padStart(2, '0')}`;
 
@@ -161,20 +174,10 @@ const BacktestTab = ({ strategy }: { strategy: StrategyDetail }) => {
     );
   }
   return (
-    <>
-      <section className="panel">
-        <div className="panel-head">
-          <h2>Backtest</h2>
-          <VerdictBadge verdict={report.verdict} />
-        </div>
-        <p className="section-note">{report.verdict.label}.</p>
-        <SplitRows splits={report.splits} />
-        <EquityCurve series={report.series} />
-        <HowToRead />
-        <Link href={`/backtests/${strategy.backtestRun.id}`} className="button secondary full">
-          Audit every backtest pick →
-        </Link>
-      </section>
+    <section className="panel">
+      <h2>Results by period</h2>
+      <SplitRows splits={report.splits} />
+      <EquityCurve series={report.series} />
       {report.warnings.length > 0 && (
         <ul className="warnings">
           {report.warnings.map((warning) => (
@@ -182,7 +185,11 @@ const BacktestTab = ({ strategy }: { strategy: StrategyDetail }) => {
           ))}
         </ul>
       )}
-    </>
+      <HowToRead />
+      <Link href={`/backtests/${strategy.backtestRun.id}`} className="button secondary full">
+        Audit every backtest pick
+      </Link>
+    </section>
   );
 };
 
@@ -239,22 +246,20 @@ export default async function StrategyPage({ params, searchParams }: { params: P
       <Link href="/" className="back">
         ← Strategies
       </Link>
-      <header className="detail-head">
+      <header className="hero">
         <div className="card-top">
-          <span className="kind">{strategy.kind === 'legacy' ? 'Original board' : 'Saved strategy'}</span>
           <VerdictBadge verdict={verdict} />
+          <span className="kind">{strategy.kind === 'legacy' ? 'Original board' : 'Saved strategy'}</span>
         </div>
         <h1>{strategy.name}</h1>
         <p className="lede">{strategy.summary}</p>
-        <p className="headline mono">
-          {strategy.report ? 'Blind test' : 'Real record'} {record(headline)} · <span className={tone(headline.roi)}>{signedPct(headline.roi)} ROI</span> ·{' '}
-          <span className={tone(headline.units)}>{units(headline.units)}</span>
-        </p>
+        <KeyNumbers summary={headline} scope={strategy.report ? 'Blind test · 2024 on' : 'Real picks'} />
+        <VerdictNote verdict={verdict} />
       </header>
       <nav className="tabs" aria-label="Strategy sections">
         {tabs.map((t) => (
           <Link key={t} href={`?tab=${t}`} scroll={false} className={t === tab ? 'active' : undefined} aria-current={t === tab ? 'page' : undefined}>
-            {t === 'board' ? 'This week' : t[0]!.toUpperCase() + t.slice(1)}
+            {TAB_LABELS[t]}
           </Link>
         ))}
       </nav>

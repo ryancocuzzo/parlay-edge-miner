@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import { formatAmerican, pct, signedPct, tone, units } from '@/lib/format';
+import { formatAmerican, pct, signedNumber, signedPct, tone, units } from '@/lib/format';
 import type { Split, Summary, Verdict } from '@/strategy/engine';
 import { describeFilter, describeScore, type StrategySpec } from '@/strategy/spec';
 
@@ -11,16 +11,20 @@ const VERDICT_LABELS: Record<Verdict['level'], string> = {
   thin: 'Too few bets',
 };
 
+const CI_SCALE = 0.4;
+
 export const VerdictBadge = ({ verdict }: { verdict: Verdict }) => (
   <span className={`verdict verdict-${verdict.level}`} title={verdict.label}>
     {VERDICT_LABELS[verdict.level]}
   </span>
 );
 
+export const VerdictNote = ({ verdict }: { verdict: Verdict }) => <p className={`verdict-note verdict-${verdict.level}`}>{verdict.label}.</p>;
+
 export const record = (s: Summary): string => `${s.wins}-${s.losses}${s.pushes ? `-${s.pushes}` : ''}`;
 
-export const CiBar = ({ summary, scale = 0.4 }: { summary: Summary; scale?: number }) => {
-  const x = (value: number) => Math.min(100, Math.max(0, ((value + scale) / (2 * scale)) * 100));
+const CiBar = ({ summary }: { summary: Summary }) => {
+  const x = (value: number) => Math.min(100, Math.max(0, ((value + CI_SCALE) / (2 * CI_SCALE)) * 100));
   const rangeTone = summary.roiLow > 0 ? 'pos' : summary.roiHigh < 0 ? 'neg' : '';
   return (
     <div
@@ -42,6 +46,29 @@ export const Stat = ({ label, value, sub, valueTone }: { label: string; value: R
     <span className="stat-label">{label}</span>
     <span className={`stat-value ${valueTone ?? ''}`}>{value}</span>
     {sub && <span className="stat-sub">{sub}</span>}
+  </div>
+);
+
+export const KeyNumbers = ({ summary, scope }: { summary: Summary; scope: string }) => (
+  <div className="key-numbers">
+    <p className="eyebrow">{scope}</p>
+    <div className="kpis">
+      <Stat label="ROI" value={summary.bets ? signedPct(summary.roi) : '—'} valueTone={tone(summary.roi)} sub="return per bet" />
+      <Stat label="Record" value={summary.bets ? record(summary) : '—'} sub={`${summary.bets} bets`} />
+      <Stat label="Profit" value={summary.bets ? signedNumber(summary.units, 1) : '—'} valueTone={tone(summary.units)} sub="units" />
+    </div>
+    <div className="likely">
+      <div className="likely-head">
+        <span>Likely ROI range</span>
+        <span className="mono">{summary.bets > 1 ? `${signedPct(summary.roiLow, 0)} to ${signedPct(summary.roiHigh, 0)}` : 'needs more bets'}</span>
+      </div>
+      <CiBar summary={summary} />
+      <div className="ci-axis" aria-hidden="true">
+        <span>{signedPct(-CI_SCALE, 0)}</span>
+        <span>break-even</span>
+        <span>{signedPct(CI_SCALE, 0)}</span>
+      </div>
+    </div>
   </div>
 );
 
@@ -68,18 +95,33 @@ const SPLITS: Record<Split, { label: string; sub: string }> = {
 export const splitLabel = (split: Split) => SPLITS[split].label;
 
 export const SplitRows = ({ splits }: { splits: Record<Split, Summary> }) => (
-  <>
+  <div className="split-rows">
     {(Object.keys(SPLITS) as Split[]).map((split) => (
       <SplitRow key={split} label={SPLITS[split].label} sub={SPLITS[split].sub} summary={splits[split]} />
     ))}
-  </>
+  </div>
 );
 
+const GLOSSARY: Array<[string, string]> = [
+  ['Blind test', 'Rules are built using 2019–23 games only, then run on 2024 onward, games they never saw. Only the blind test counts toward the verdict, because almost anything looks good on the data it was tuned on.'],
+  ['ROI', 'Profit per dollar bet. +5% means $5 profit for every $100 wagered. Picking at random loses roughly 4–5% to the bookmaker’s cut.'],
+  ['Units', 'One unit is one standard bet. +10 units means you are up ten times your usual stake.'],
+  ['Likely range', 'Where the true ROI probably sits (95% confidence) given how many bets there are. If the whole bar sits right of break-even, the edge is very unlikely to be luck.'],
+  ['Strength', 'How a pick ranks, from 0 to 100, against every pick these rules would have made in 2019–23.'],
+];
+
 export const HowToRead = () => (
-  <p className="fine how-to-read">
-    Rules are built using 2019–23 only. Everything from 2024 on is a blind test, and only the blind test counts toward the verdict. A unit is one
-    standard bet: +10 units means you won ten times your usual stake. The bar shows the likely range of ROI (95%); the center line is break-even.
-  </p>
+  <details className="explainer">
+    <summary>How to read this</summary>
+    <dl>
+      {GLOSSARY.map(([term, meaning]) => (
+        <div key={term}>
+          <dt>{term}</dt>
+          <dd>{meaning}</dd>
+        </div>
+      ))}
+    </dl>
+  </details>
 );
 
 export const SplitRow = ({ label, sub, summary }: { label: string; sub: string; summary: Summary }) => (
@@ -111,18 +153,20 @@ export const EquityCurve = ({ series, height = 120 }: { series: Array<{ key: str
     { index: boundary(2026), label: '2026' },
   ].filter((marker) => marker.index > 0);
   const last = series.at(-1)!.units;
+  const line = series.map((point, index) => `${x(index)},${y(point.units)}`).join(' ');
   return (
-    <figure className="equity">
-      <span className={`equity-total mono ${tone(last) ?? ''}`}>{units(last)}</span>
-      <svg viewBox={`0 0 ${width} ${height}`} preserveAspectRatio="none" aria-label="Total profit in units, week by week">
+    <figure className={`equity ${last >= 0 ? 'pos' : 'neg'}`}>
+      <div className="equity-head">
+        <span>Total profit since {series[0]!.key.slice(0, 4)}</span>
+        <span className={`mono ${tone(last) ?? ''}`}>{units(last)}</span>
+      </div>
+      <svg viewBox={`0 0 ${width} ${height}`} preserveAspectRatio="none" aria-label="Total profit in units, week by week" style={{ height }}>
+        <polygon points={`${line} ${width},${y(0)} 0,${y(0)}`} className="equity-area" />
         <line x1={0} x2={width} y1={y(0)} y2={y(0)} className="equity-zero" />
         {markers.map((marker) => (
           <line key={marker.label} x1={x(marker.index)} x2={x(marker.index)} y1={0} y2={height} className="equity-marker" />
         ))}
-        <polyline
-          points={series.map((point, index) => `${x(index)},${y(point.units)}`).join(' ')}
-          className={`equity-line ${last >= 0 ? 'pos' : 'neg'}`}
-        />
+        <polyline points={line} className="equity-line" />
       </svg>
       <figcaption>
         <span>{series[0]!.key.slice(0, 4)}</span>
@@ -153,13 +197,13 @@ export const RuleChips = ({ spec }: { spec: StrategySpec }) => (
   </div>
 );
 
-export const ResultTag = ({ result, profit }: { result?: string | null; profit?: number | null }) => (
+const ResultTag = ({ result, profit }: { result?: string | null; profit?: number | null }) => (
   <span className={`tag ${result ?? 'open'}`}>
-    {result ? `${result}${profit !== undefined && profit !== null && result !== 'push' ? ` ${units(profit)}` : ''}` : 'open'}
+    {result ? `${result}${profit !== undefined && profit !== null && result !== 'push' ? ` ${signedNumber(profit)}` : ''}` : 'open'}
   </span>
 );
 
-export const StrengthMeter = ({ value }: { value: number }) => (
+const StrengthMeter = ({ value }: { value: number }) => (
   <span className="strength" title={`Strength ${value}: how this pick ranks against every pick these rules would have made in 2019–23 (0–100)`}>
     <span className="strength-bar">
       <span style={{ width: `${Math.max(4, value)}%` }} />

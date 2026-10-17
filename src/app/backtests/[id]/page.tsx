@@ -1,7 +1,19 @@
 import Link from 'next/link';
 import { notFound, redirect } from 'next/navigation';
 import { requireUser } from '@/auth';
-import { EquityCurve, HowToRead, PickItem, record, RuleChips, SplitRow, SplitRows, splitLabel, VerdictBadge } from '@/components/strategy/stats';
+import {
+  EquityCurve,
+  HowToRead,
+  KeyNumbers,
+  PickItem,
+  record,
+  RuleChips,
+  SplitRow,
+  SplitRows,
+  splitLabel,
+  VerdictBadge,
+  VerdictNote,
+} from '@/components/strategy/stats';
 import { formatAmerican, formatLine, pct, shortDate, tone, units, weekLabel } from '@/lib/format';
 import { featureValues, splitFor, summarize, type GradedPick } from '@/strategy/engine';
 import { replayBacktest, saveStrategy } from '@/strategy/service';
@@ -41,18 +53,20 @@ export default async function BacktestPage({ params, searchParams }: { params: P
       <Link href={saved ? `/strategies/${saved.slug}?tab=backtest` : '/lab'} className="back">
         ← {saved ? saved.name : 'Lab'}
       </Link>
-      <header className="detail-head">
+      <header className="hero">
         <div className="card-top">
-          <span className="kind">Backtest report</span>
           <VerdictBadge verdict={report.verdict} />
+          <span className="kind">Backtest report</span>
         </div>
         <h1>{spec.name}</h1>
         <p className="lede">{spec.summary}</p>
         <RuleChips spec={spec} />
+        <KeyNumbers summary={report.outOfSample} scope="Blind test · 2024 on" />
+        <VerdictNote verdict={report.verdict} />
         <p className={`proof ${reproduced ? 'ok' : 'warn'}`}>
           {reproduced
             ? '✓ Reproduced: re-running these rules on today’s data gives the same 2019–25 results as when this run was first saved.'
-            : `⚠ 2019–25 results differ from the saved run (build seasons ${record(stored.splits.train)} → ${record(report.splits.train)}, blind test ${record(stored.splits.holdout)} → ${record(report.splits.holdout)}). Historical data was revised after this run.`}
+            : `⚠ 2019–25 results differ from the saved run (build seasons ${record(stored.splits.train)}, ${units(stored.splits.train.units)} → ${record(report.splits.train)}, ${units(report.splits.train.units)}; blind test ${record(stored.splits.holdout)}, ${units(stored.splits.holdout.units)} → ${record(report.splits.holdout)}, ${units(report.splits.holdout.units)}). Historical scores or prices were revised after this run.`}
         </p>
       </header>
 
@@ -72,8 +86,7 @@ export default async function BacktestPage({ params, searchParams }: { params: P
       )}
 
       <section className="panel">
-        <h2>Results</h2>
-        <p className="section-note">{report.verdict.label}.</p>
+        <h2>Results by period</h2>
         <SplitRows splits={report.splits} />
         <EquityCurve series={report.series} />
         <HowToRead />

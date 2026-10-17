@@ -9,7 +9,9 @@ export const pct = (value: number, digits = 1): string => `${(value * 100).toFix
 
 export const signedPct = (value: number, digits = 1): string => `${value > 0 ? '+' : ''}${(value * 100).toFixed(digits)}%`;
 
-export const units = (value: number): string => `${value > 0 ? '+' : ''}${value.toFixed(2)} units`;
+export const signedNumber = (value: number, digits = 2): string => `${value > 0 ? '+' : ''}${value.toFixed(digits)}`;
+
+export const units = (value: number): string => `${signedNumber(value)} units`;
 
 export const tone = (value: number): 'pos' | 'neg' | undefined => (value > 0 ? 'pos' : value < 0 ? 'neg' : undefined);
 
