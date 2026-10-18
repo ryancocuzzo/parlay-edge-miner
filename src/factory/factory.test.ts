@@ -88,7 +88,7 @@ describe('deploy guard', () => {
 });
 
 describe('outcomeOf', () => {
-  const run = { id: 'run-1', status: 'FINISHED' as const, result: 'Added a streak column to Track record.', git: { branches: [{ branch: 'main' }] } };
+  const run = { id: 'run-1', status: 'FINISHED' as const, updatedAt: now, result: 'Added a streak column to Track record.', git: { branches: [{ branch: 'main' }] } };
 
   it('moves a finished run that pushed to main into deploying', () => {
     expect(outcomeOf(run)).toEqual({ status: 'deploying', detail: 'Added a streak column to Track record.' });

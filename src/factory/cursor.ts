@@ -6,6 +6,7 @@ export const REPO_URL = 'https://github.com/ryancocuzzo/parlay-edge-miner';
 const runSchema = z.object({
   id: z.string(),
   status: z.enum(['CREATING', 'RUNNING', 'FINISHED', 'ERROR', 'CANCELLED', 'EXPIRED']),
+  updatedAt: z.coerce.date(),
   result: z.string().nullish().transform((v) => v ?? undefined),
   git: z
     .object({ branches: z.array(z.object({ branch: z.string().nullish() })) })

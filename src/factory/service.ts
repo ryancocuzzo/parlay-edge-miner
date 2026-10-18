@@ -75,17 +75,18 @@ Rules
 - Build only what the brief describes. If doing it properly would need a protected path, a never-list item, or a risky rewrite, change nothing and reply with a first line "DECLINED: <one friendly sentence for the user>".
 - Before pushing: npm run typecheck, npm test and npm run build must all pass. Add or update tests for logic changes.
 - Commit to main with the title as the subject and a "Factory-Request: ${request.id}" trailer. Then git pull --rebase origin main, re-run the checks if anything came in, and git push origin main. Never force-push.
-- Your final message goes straight to the user: one or two plain sentences on what changed and where to find it.`;
+- Your final message goes straight to the user, a non-engineer on a phone: one or two plain sentences on what changed and where to find it in the app. No file names, commands or check results.`;
 
 const builtAt = () => (process.env.BUILT_AT ? new Date(process.env.BUILT_AT) : undefined);
 
-const syncBuilding = async (request: FeatureRequest, settings: FactorySettings, now: Date) => {
-  const outcome = outcomeOf(await getRun(request.agentId!, request.runId!));
+const syncBuilding = async (request: FeatureRequest, settings: FactorySettings) => {
+  const run = await getRun(request.agentId!, request.runId!);
+  const outcome = outcomeOf(run);
   if (!outcome) return;
   const usage = await getUsage(request.agentId!);
   await prisma.featureRequest.update({
     where: { id: request.id },
-    data: { status: outcome.status, statusDetail: outcome.detail, usage, costUsd: estimateCost(usage, settings), finishedAt: now },
+    data: { status: outcome.status, statusDetail: outcome.detail, usage, costUsd: estimateCost(usage, settings), finishedAt: run.updatedAt },
   });
 };
 
@@ -128,7 +129,7 @@ export const advanceFactory = async (now: Date) => {
     prisma.featureRequest.findMany({ where: { status: { in: IN_FLIGHT } }, orderBy: { createdAt: 'asc' } }),
   ]);
   await Promise.all([
-    ...inFlight.filter((r) => r.status === 'building' && r.agentId && r.runId).map((r) => syncBuilding(r, settings, now)),
+    ...inFlight.filter((r) => r.status === 'building' && r.agentId && r.runId).map((r) => syncBuilding(r, settings)),
     ...inFlight.filter((r) => r.status === 'deploying').map((r) => syncDeploying(r, now)),
   ]);
 
