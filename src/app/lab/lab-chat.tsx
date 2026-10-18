@@ -20,6 +20,7 @@ const SUGGESTIONS = [
   'Home underdogs on the spread in conference games',
   'Unders when the total is high',
   'Why did the original board lose money?',
+  'Top-10 teams after playing a ranked opponent',
 ];
 
 const GROUP_LABELS = {
