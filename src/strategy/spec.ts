@@ -41,6 +41,12 @@ export const FEATURES = {
   lostLast: { label: 'Lost last game', unit: 'flag', markets: ['moneyline', 'spread'], description: '1 when the selection lost its previous game this season.' },
   streak: { label: 'Streak', unit: 'games', markets: ['moneyline', 'spread'], description: 'Current win (+) or loss (−) streak this season. -2 = lost two straight.' },
   opponentLostLast: { label: 'Opponent lost last game', unit: 'flag', markets: ['moneyline', 'spread'], description: '1 when the opponent lost its previous game this season.' },
+  apRank: { label: 'AP rank', unit: 'rank', markets: ['moneyline', 'spread'], description: "Selection's AP Top 25 rank in the latest poll before the game (1 = best; bowls use the last regular-season poll). Missing when unranked, so a max filter like ≤ 10 means top 10." },
+  opponentApRank: { label: 'Opponent AP rank', unit: 'rank', markets: ['moneyline', 'spread'], description: "Opponent's AP Top 25 rank entering the game. Missing when unranked." },
+  ranked: { label: 'Ranked', unit: 'flag', markets: ['moneyline', 'spread'], description: '1 when the selection is in the AP Top 25 entering the game.' },
+  opponentRanked: { label: 'Opponent ranked', unit: 'flag', markets: ['moneyline', 'spread'], description: '1 when the opponent is in the AP Top 25 entering the game.' },
+  lastOpponentApRank: { label: "Last opponent's AP rank", unit: 'rank', markets: ['moneyline', 'spread'], description: "AP rank of the selection's previous opponent this season, as of that game. Missing when that opponent was unranked." },
+  afterTop10Matchup: { label: 'After a top-10 matchup', unit: 'flag', markets: ['moneyline', 'spread'], description: "1 when the selection's previous game this season was AP top 10 vs AP top 10 (ranks as of that game)." },
   isOver: { label: 'Over', unit: 'flag', markets: ['total'], description: '1 for the over, 0 for the under.' },
   week: { label: 'Week', unit: 'week', markets: MARKETS, description: 'Season week number (postseason games count as week 20+).' },
 } as const satisfies Record<string, { label: string; unit: string; markets: readonly Market[]; description: string }>;

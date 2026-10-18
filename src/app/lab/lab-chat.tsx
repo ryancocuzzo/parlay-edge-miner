@@ -22,6 +22,17 @@ const SUGGESTIONS = [
   'Why did the original board lose money?',
 ];
 
+const GROUP_LABELS = {
+  venue: 'Venues',
+  team: 'Teams',
+  opponent: 'Opponents',
+  conference: 'Conferences',
+  opponentConference: 'Opponent conferences',
+  apRank: 'AP rank',
+  opponentApRank: 'Opponent AP rank',
+  season: 'Seasons',
+} as const;
+
 const EDITED_SPEC = /```json\n([\s\S]*?)\n```/;
 
 const editedSpec = (text: string): StrategySpec | undefined => {
@@ -69,6 +80,29 @@ function ToolPart({ part, onEdit }: { part: Part; onEdit: (spec: StrategySpec) =
             </ul>
           </>
         )}
+      </details>
+    );
+  }
+  if (part.type === 'tool-compareGroups') {
+    const label = part.input?.groupBy ? `${GROUP_LABELS[part.input.groupBy]} · ${part.input.market}` : '';
+    if (part.state !== 'output-available') return <Working label={`Comparing ${label}…`} />;
+    const { best, buildLeadersInBlindTest: leaders } = part.output;
+    return (
+      <details className="tool-line">
+        <summary>Compared {label}</summary>
+        <p className="fine">Best groups by ROI: 2019–23, then the blind test (2024 on).</p>
+        <ul className="quintiles">
+          {best.map((group) => (
+            <li key={group.label}>
+              <span>{group.label}</span>
+              <span className={`mono ${tone(group.buildSeasons.roi) ?? ''}`}>{signedPct(group.buildSeasons.roi)}</span>
+              <span className={`mono ${tone(group.blindTest.roi) ?? ''}`}>{signedPct(group.blindTest.roi)}</span>
+            </li>
+          ))}
+        </ul>
+        <p className="fine">
+          The 2019–23 top {leaders.groups.length} in the blind test: {leaders.record}, {signedPct(leaders.roi)}
+        </p>
       </details>
     );
   }

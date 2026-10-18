@@ -1,11 +1,13 @@
 import { describe, expect, it } from 'vitest';
+import apRankings from '../../fixtures/cfbd/ap-rankings-2025.json';
 import gamesJson from '../../fixtures/cfbd/games.json';
-import { candidatesForGame, gradeCandidate, withTeamForm, type DatasetGame } from './candidates';
+import { candidatesForGame, gradeCandidate, withRankings, withTeamForm, type DatasetGame } from './candidates';
 import { prepareScorer, runBacktest, selectWeek, specHash, summarize, verdictFor } from './engine';
 import { strategySpecSchema, type StrategySpec } from './spec';
 
 const games: DatasetGame[] = gamesJson.map((game) => ({ ...game, startsAt: new Date(game.startsAt) }));
 const gameById = (id: number) => games.find((game) => game.id === id)!;
+const ranked = withTeamForm(withRankings(games, apRankings));
 
 const underdogEloSpec: StrategySpec = {
   name: 'Elo-backed underdogs',
@@ -43,7 +45,7 @@ describe('candidatesForGame', () => {
   });
 });
 
-describe('team form', () => {
+describe('team form and rankings', () => {
   it("carries each team's previous result into its next game, never the same game's", () => {
     const withForm = withTeamForm(games);
     const georgiaWeek6 = withForm.find((g) => g.id === 401752728)!;
@@ -58,6 +60,31 @@ describe('team form', () => {
     expect(illinois.features).toMatchObject({ lastMargin: 2, lostLast: 0, streak: 1 });
     expect(illinois.features.opponentLostLast).toBeUndefined();
     expect(withForm.find((g) => g.id === 401752718)!.homeForm).toBeUndefined();
+  });
+
+  it('ranks each team by the AP poll released before kickoff', () => {
+    const georgiaAlabama = ranked.find((g) => g.id === 401752718)!;
+
+    const georgia = candidatesForGame(georgiaAlabama, 'spread').find((c) => c.team === 'Georgia')!;
+
+    expect(georgia.features).toMatchObject({ apRank: 5, opponentApRank: 17, ranked: 1, opponentRanked: 1 });
+  });
+
+  it('flags the game after a top-10 vs top-10 matchup using ranks from that matchup', () => {
+    const pennStateAtUcla = ranked.find((g) => g.id === 401752855)!;
+    const [pennState, ucla] = ['Penn State', 'UCLA'].map((team) => candidatesForGame(pennStateAtUcla, 'spread').find((c) => c.team === team)!);
+
+    expect(pennState.features).toMatchObject({ apRank: 7, lastOpponentApRank: 6, afterTop10Matchup: 1, opponentRanked: 0 });
+    expect(ucla.features).toMatchObject({ ranked: 0, afterTop10Matchup: 0 });
+    expect(ucla.features.apRank).toBeUndefined();
+  });
+
+  it('does not flag a matchup where only one team was top 10', () => {
+    const georgiaKentucky = ranked.find((g) => g.id === 401752728)!;
+
+    const georgia = candidatesForGame(georgiaKentucky, 'spread').find((c) => c.team === 'Georgia')!;
+
+    expect(georgia.features).toMatchObject({ apRank: 12, lastOpponentApRank: 17, afterTop10Matchup: 0 });
   });
 
   it('limits a strategy to teams from the chosen conferences', () => {

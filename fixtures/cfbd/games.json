@@ -1248,5 +1248,102 @@
     "awayMoneyline": -320
    }
   ]
+ },
+ {
+  "id": 401752854,
+  "season": 2025,
+  "week": 5,
+  "seasonType": "regular",
+  "startsAt": "2025-09-27T23:30:00.000Z",
+  "completed": true,
+  "neutralSite": false,
+  "conferenceGame": true,
+  "homeTeam": "Penn State",
+  "awayTeam": "Oregon",
+  "homeConference": "Big Ten",
+  "awayConference": "Big Ten",
+  "homeClassification": "fbs",
+  "awayClassification": "fbs",
+  "homePoints": 24,
+  "awayPoints": 30,
+  "homeElo": 2087,
+  "awayElo": 2001,
+  "lines": [
+   {
+    "provider": "ESPN Bet",
+    "spread": -4.5,
+    "spreadOpen": -6.5,
+    "total": 52.5,
+    "totalOpen": 52.5,
+    "homeMoneyline": -190,
+    "awayMoneyline": 160
+   },
+   {
+    "provider": "DraftKings",
+    "spread": -3.5,
+    "spreadOpen": -5.5,
+    "total": 53.5,
+    "totalOpen": 52.5,
+    "homeMoneyline": -180,
+    "awayMoneyline": 150
+   },
+   {
+    "provider": "Bovada",
+    "spread": -4,
+    "spreadOpen": -3.5,
+    "total": 53,
+    "totalOpen": 52.5,
+    "homeMoneyline": -160,
+    "awayMoneyline": 135
+   }
+  ]
+ },
+ {
+  "id": 401752855,
+  "season": 2025,
+  "week": 6,
+  "seasonType": "regular",
+  "startsAt": "2025-10-04T19:30:00.000Z",
+  "completed": true,
+  "neutralSite": false,
+  "conferenceGame": true,
+  "homeTeam": "UCLA",
+  "awayTeam": "Penn State",
+  "homeConference": "Big Ten",
+  "awayConference": "Big Ten",
+  "homeClassification": "fbs",
+  "awayClassification": "fbs",
+  "homePoints": 42,
+  "awayPoints": 37,
+  "homeElo": 1331,
+  "awayElo": 2070,
+  "lines": [
+   {
+    "provider": "DraftKings",
+    "spread": 24.5,
+    "spreadOpen": 27.5,
+    "total": 48.5,
+    "homeMoneyline": 1200,
+    "awayMoneyline": -2400
+   },
+   {
+    "provider": "Bovada",
+    "spread": 24.5,
+    "spreadOpen": 25,
+    "total": 48,
+    "totalOpen": 50,
+    "homeMoneyline": 1100,
+    "awayMoneyline": -3500
+   },
+   {
+    "provider": "ESPN Bet",
+    "spread": 24.5,
+    "spreadOpen": 25.5,
+    "total": 47.5,
+    "totalOpen": 49.5,
+    "homeMoneyline": 1500,
+    "awayMoneyline": -5000
+   }
+  ]
  }
 ]

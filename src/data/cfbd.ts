@@ -14,6 +14,7 @@ const gameSchema = z.object({
   startDate: z.string(),
   completed: z.boolean(),
   neutralSite: z.boolean(),
+  venue: optional(z.string()),
   conferenceGame: z.boolean(),
   homeTeam: z.string(),
   awayTeam: z.string(),
@@ -48,9 +49,22 @@ const teamSchema = z.object({
   classification: optional(z.string()),
 });
 
+const pollWeekSchema = z.object({
+  season: z.number().int(),
+  seasonType: z.string(),
+  week: z.number().int(),
+  polls: z.array(
+    z.object({
+      poll: z.string(),
+      ranks: z.array(z.object({ rank: z.number().int(), school: z.string() })),
+    }),
+  ),
+});
+
 export type CfbdGame = z.infer<typeof gameSchema>;
 export type CfbdGameLines = z.infer<typeof gameLinesSchema>;
 export type CfbdTeam = z.infer<typeof teamSchema>;
+export type CfbdPollWeek = z.infer<typeof pollWeekSchema>;
 
 export type ApiCallRecorder = (call: { path: string; status: number; remaining?: number }) => Promise<void>;
 
@@ -58,6 +72,7 @@ export type CfbdClient = {
   games: (season: number) => Promise<CfbdGame[]>;
   lines: (season: number) => Promise<CfbdGameLines[]>;
   teams: () => Promise<CfbdTeam[]>;
+  rankings: (season: number) => Promise<CfbdPollWeek[]>;
 };
 
 export const createCfbdClient = (input: {
@@ -87,5 +102,6 @@ export const createCfbdClient = (input: {
     games: (season) => get(`/games?year=${season}`, z.array(gameSchema)),
     lines: (season) => get(`/lines?year=${season}`, z.array(gameLinesSchema)),
     teams: () => get('/teams', z.array(teamSchema)),
+    rankings: (season) => get(`/rankings?year=${season}&seasonType=both`, z.array(pollWeekSchema)),
   };
 };

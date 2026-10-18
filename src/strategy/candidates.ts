@@ -19,9 +19,12 @@ export type DatasetGame = {
   startsAt: Date;
   completed: boolean;
   neutralSite: boolean;
+  venue?: string;
   conferenceGame: boolean;
   homeTeam: string;
   awayTeam: string;
+  homeRank?: number;
+  awayRank?: number;
   homeConference?: string;
   awayConference?: string;
   homeClassification?: string;
@@ -35,7 +38,9 @@ export type DatasetGame = {
   lines: GameLine[];
 };
 
-export type TeamForm = { lastMargin: number; streak: number };
+export type TeamForm = { lastMargin: number; streak: number; lastOpponentRank?: number; lastTop10Matchup: boolean };
+
+export type PollRank = { season: number; week: number; school: string; rank: number };
 
 export type Selection = 'home' | 'away' | 'over' | 'under';
 
@@ -52,6 +57,7 @@ export type Candidate = {
   price: number;
   line?: number;
   provider: string;
+  venue?: string;
   conferences: string[];
   opponentConference?: string;
   features: Partial<Record<FeatureKey, number>>;
@@ -76,6 +82,18 @@ const median = (values: Array<number | undefined>): number | undefined => {
 export const weekKey = (game: { season: number; seasonType: string; week: number }): string =>
   `${game.season}-${game.seasonType}-${String(game.week).padStart(2, '0')}`;
 
+export const withRankings = (games: DatasetGame[], ranks: PollRank[]): DatasetGame[] => {
+  const bySeason = Map.groupBy(ranks, (r) => r.season);
+  return games.map((game) => {
+    const released = (bySeason.get(game.season) ?? []).filter((r) => game.seasonType !== 'regular' || r.week <= game.week);
+    const week = Math.max(...released.map((r) => r.week));
+    const rankOf = (team: string) => released.find((r) => r.week === week && r.school === team)?.rank;
+    return { ...game, homeRank: rankOf(game.homeTeam), awayRank: rankOf(game.awayTeam) };
+  });
+};
+
+const isTop10 = (rank: number | undefined): boolean => rank !== undefined && rank <= 10;
+
 export const withTeamForm = (games: DatasetGame[]): DatasetGame[] => {
   const latest = new Map<string, TeamForm>();
   return [...games]
@@ -85,12 +103,15 @@ export const withTeamForm = (games: DatasetGame[]): DatasetGame[] => {
       const awayKey = `${game.season}:${game.awayTeam}`;
       const withForm = { ...game, homeForm: latest.get(homeKey), awayForm: latest.get(awayKey) };
       if (game.completed && game.homePoints !== undefined && game.awayPoints !== undefined) {
-        const next = (form: TeamForm | undefined, margin: number): TeamForm => ({
+        const lastTop10Matchup = isTop10(game.homeRank) && isTop10(game.awayRank);
+        const next = (form: TeamForm | undefined, margin: number, opponentRank: number | undefined): TeamForm => ({
           lastMargin: margin,
           streak: form && Math.sign(form.streak) === Math.sign(margin) ? form.streak + Math.sign(margin) : Math.sign(margin),
+          lastOpponentRank: opponentRank,
+          lastTop10Matchup,
         });
-        latest.set(homeKey, next(withForm.homeForm, game.homePoints - game.awayPoints));
-        latest.set(awayKey, next(withForm.awayForm, game.awayPoints - game.homePoints));
+        latest.set(homeKey, next(withForm.homeForm, game.homePoints - game.awayPoints, game.awayRank));
+        latest.set(awayKey, next(withForm.awayForm, game.awayPoints - game.homePoints, game.homeRank));
       }
       return withForm;
     });
@@ -108,6 +129,7 @@ export const candidatesForGame = (game: DatasetGame, market: Market, books?: rea
     week: game.week,
     startsAt: game.startsAt,
     market,
+    venue: game.venue,
   };
   const context = {
     neutralSite: flag(game.neutralSite),
@@ -144,6 +166,7 @@ export const candidatesForGame = (game: DatasetGame, market: Market, books?: rea
     const [elo, oppElo] = isHome ? [game.homeElo, game.awayElo] : [game.awayElo, game.homeElo];
     const [conference, oppConference] = isHome ? [game.homeConference, game.awayConference] : [game.awayConference, game.homeConference];
     const [form, oppForm] = isHome ? [game.homeForm, game.awayForm] : [game.awayForm, game.homeForm];
+    const [rank, oppRank] = isHome ? [game.homeRank, game.awayRank] : [game.awayRank, game.homeRank];
     const sideSpread = spread === undefined ? undefined : isHome ? spread : -spread;
     const sideSpreadOpen = spreadOpen === undefined ? undefined : isHome ? spreadOpen : -spreadOpen;
     const eloDiff = elo === undefined || oppElo === undefined ? undefined : elo - oppElo;
@@ -166,6 +189,12 @@ export const candidatesForGame = (game: DatasetGame, market: Market, books?: rea
       lostLast: form && flag(form.lastMargin < 0),
       streak: form?.streak,
       opponentLostLast: oppForm && flag(oppForm.lastMargin < 0),
+      apRank: rank,
+      opponentApRank: oppRank,
+      ranked: flag(rank !== undefined),
+      opponentRanked: flag(oppRank !== undefined),
+      lastOpponentApRank: form?.lastOpponentRank,
+      afterTop10Matchup: form && flag(form.lastTop10Matchup),
     };
     const sideShared = { ...shared, selection, team, opponent, conferences: conference ? [conference] : [], opponentConference: oppConference };
 

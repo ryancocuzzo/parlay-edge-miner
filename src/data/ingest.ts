@@ -1,5 +1,5 @@
 import type { PrismaClient } from '@prisma/client';
-import type { CfbdClient, CfbdGame, CfbdGameLines } from './cfbd';
+import type { CfbdClient, CfbdGame, CfbdGameLines, CfbdPollWeek } from './cfbd';
 
 export const FIRST_HISTORY_SEASON = 2019;
 export const CURRENT_SEASON_REFRESH_MS = 12 * 60 * 60 * 1000;
@@ -24,6 +24,7 @@ export const toGameRows = (games: CfbdGame[], now: Date) =>
       startsAt: game.startDate,
       completed: game.completed,
       neutralSite: game.neutralSite,
+      venue: game.venue,
       conferenceGame: game.conferenceGame,
       homeTeam: game.homeTeam,
       awayTeam: game.awayTeam,
@@ -54,6 +55,20 @@ export const toLineRows = (gameLines: CfbdGameLines[], gameIds: Set<number>) =>
       })),
     );
 
+export const toRankingRows = (weeks: CfbdPollWeek[]) =>
+  weeks.flatMap(({ season, seasonType, week, polls }) =>
+    polls.flatMap(({ poll, ranks }) => ranks.map(({ rank, school }) => ({ season, seasonType, week, poll, school, rank }))),
+  );
+
+export const syncRankings = async (prisma: PrismaClient, client: CfbdClient, season: number) => {
+  const rows = toRankingRows(await client.rankings(season));
+  await prisma.$transaction([
+    prisma.cfbRanking.deleteMany({ where: { season } }),
+    prisma.cfbRanking.createMany({ data: rows, skipDuplicates: true }),
+  ]);
+  return { season, rankings: rows.length };
+};
+
 const GAME_COLUMNS = [
   'season',
   'week',
@@ -61,6 +76,7 @@ const GAME_COLUMNS = [
   'startsAt',
   'completed',
   'neutralSite',
+  'venue',
   'conferenceGame',
   'homeTeam',
   'awayTeam',
@@ -119,24 +135,24 @@ export const syncTeams = async (prisma: PrismaClient, client: CfbdClient) => {
 
 export const syncCfbd = async (prisma: PrismaClient, client: CfbdClient, now: Date) => {
   const currentSeason = seasonFor(now);
-  const storedSeasons = new Set(
-    (await prisma.cfbGame.groupBy({ by: ['season'] })).map((row) => row.season),
-  );
-  const lastCurrentSync = await prisma.apiCall.findFirst({
-    where: { api: 'cfbd', path: `/games?year=${currentSeason}`, status: 200 },
-    orderBy: { createdAt: 'desc' },
-  });
-  const missingHistory = Array.from(
-    { length: currentSeason - FIRST_HISTORY_SEASON },
-    (_, offset) => FIRST_HISTORY_SEASON + offset,
-  ).filter((season) => !storedSeasons.has(season));
+  const [gameSeasons, rankingSeasons, lastCurrentSync] = await Promise.all([
+    prisma.cfbGame.groupBy({ by: ['season'] }),
+    prisma.cfbRanking.groupBy({ by: ['season'] }),
+    prisma.apiCall.findFirst({
+      where: { api: 'cfbd', path: `/games?year=${currentSeason}`, status: 200 },
+      orderBy: { createdAt: 'desc' },
+    }),
+  ]);
+  const history = Array.from({ length: currentSeason - FIRST_HISTORY_SEASON }, (_, offset) => FIRST_HISTORY_SEASON + offset);
+  const missing = (stored: Array<{ season: number }>) =>
+    history.filter((season) => !stored.some((row) => row.season === season));
   const currentStale =
     !lastCurrentSync || now.getTime() - lastCurrentSync.createdAt.getTime() > CURRENT_SEASON_REFRESH_MS;
+  const current = currentStale ? [currentSeason] : [];
 
   const teams = (await prisma.cfbTeam.count()) === 0 ? await syncTeams(prisma, client) : undefined;
   const synced = [];
-  for (const season of [...missingHistory, ...(currentStale ? [currentSeason] : [])]) {
-    synced.push(await syncSeason(prisma, client, season));
-  }
+  for (const season of [...missing(gameSeasons), ...current]) synced.push(await syncSeason(prisma, client, season));
+  for (const season of [...missing(rankingSeasons), ...current]) synced.push(await syncRankings(prisma, client, season));
   return { teams, synced };
 };

@@ -45,6 +45,7 @@ model CfbGame {
   startsAt           DateTime
   completed          Boolean
   neutralSite        Boolean
+  venue              String?
   conferenceGame     Boolean
   homeTeam           String
   awayTeam           String
@@ -62,6 +63,17 @@ model CfbGame {
 
   @@index([season, seasonType, week])
   @@index([startsAt])
+}
+
+model CfbRanking {
+  season     Int
+  seasonType String
+  week       Int
+  poll       String
+  school     String
+  rank       Int
+
+  @@id([season, seasonType, week, poll, school])
 }
 
 model GameLine {
