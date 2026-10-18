@@ -8,10 +8,51 @@ datasource db {
 }
 
 model AllowlistUser {
-  id        String   @id @default(cuid())
-  email     String   @unique
-  isAdmin   Boolean  @default(false)
-  createdAt DateTime @default(now())
+  id             String   @id @default(cuid())
+  email          String   @unique
+  isAdmin        Boolean  @default(false)
+  factoryPaused  Boolean  @default(false)
+  factoryPerHour Int?
+  factoryPerDay  Int?
+  createdAt      DateTime @default(now())
+}
+
+model FeatureRequest {
+  id           String    @id @default(cuid())
+  userEmail    String
+  kind         String
+  category     String?
+  title        String
+  description  String
+  brief        String?
+  screenshots  Json      @default("[]")
+  status       String
+  statusDetail String?
+  agentId      String?
+  runId        String?
+  usage        Json?
+  costUsd      Float     @default(0)
+  dispatchedAt DateTime?
+  finishedAt   DateTime?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  @@index([userEmail, createdAt])
+  @@index([status])
+}
+
+model FactorySettings {
+  id                Int     @id @default(1)
+  enabled           Boolean @default(true)
+  perHour           Int     @default(2)
+  perDay            Int     @default(5)
+  maxActive         Int     @default(1)
+  dailyBudgetUsd    Float   @default(20)
+  model             String  @default("claude-sonnet-5-5")
+  inputUsdPerM      Float   @default(2)
+  outputUsdPerM     Float   @default(10)
+  cacheReadUsdPerM  Float   @default(0.1)
+  cacheWriteUsdPerM Float   @default(2.5)
 }
 
 model SlateSnapshot {

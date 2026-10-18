@@ -1,8 +1,7 @@
 import Link from 'next/link';
-import { notFound, redirect } from 'next/navigation';
+import { redirect } from 'next/navigation';
 import { revalidatePath } from 'next/cache';
-import { addAllowlist, findAllowlisted, listAllowlist, MAX_USERS, removeAllowlist } from '@/allowlist';
-import { requireUser } from '@/auth';
+import { addAllowlist, listAllowlist, MAX_USERS, removeAllowlist } from '@/allowlist';
 import { Stat } from '@/components/strategy/stats';
 import { latestRemaining } from '@/data/usage';
 import { runScheduledJobs } from '@/jobs';
@@ -10,15 +9,11 @@ import { prisma } from '@/lib/prisma';
 import { shortDate } from '@/lib/format';
 import { LEGACY_SLUG } from '@/strategy/legacy';
 import type { LegacyMeta } from '@/strategy/service';
+import { FactoryPanel } from './factory-panel';
+import { requireAdmin } from './require-admin';
 
 export const dynamic = 'force-dynamic';
 export const maxDuration = 300;
-
-const requireAdmin = async () => {
-  const user = await requireUser();
-  if (!(await findAllowlisted(user.email))?.isAdmin) notFound();
-  return user;
-};
 
 export default async function AdminPage({ searchParams }: { searchParams: Promise<{ ran?: string }> }) {
   await requireAdmin();
@@ -38,6 +33,8 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
   return (
     <div>
       <h1>Admin</h1>
+
+      <FactoryPanel />
 
       <section className="panel">
         <h2>API budgets this month</h2>

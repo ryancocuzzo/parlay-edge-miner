@@ -1,4 +1,5 @@
 {
+  "ignoreCommand": "node src/factory/deploy-guard.ts",
   "crons": [
     {
       "path": "/api/cron",

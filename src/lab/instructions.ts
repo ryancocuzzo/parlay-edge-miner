@@ -1,5 +1,3 @@
-export const LAB_MODEL = 'anthropic/claude-sonnet-5.5';
-
 export const LAB_INSTRUCTIONS = `You help the user design and honestly evaluate college football betting strategies.
 
 How strategies work

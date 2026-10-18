@@ -6,6 +6,7 @@ import { usePathname } from 'next/navigation';
 const ICONS = {
   strategies: 'M4 19V9M10 19V5M16 19v-7M22 19H2',
   lab: 'M9 3h6M10 3v6l-5 9a2 2 0 0 0 1.7 3h10.6a2 2 0 0 0 1.7-3l-5-9V3M7.5 15h9',
+  requests: 'M12 3l1.9 4.6L18.5 9.5l-4.6 1.9L12 16l-1.9-4.6L5.5 9.5l4.6-1.9L12 3zM19 15l.9 2.1 2.1.9-2.1.9L19 21l-.9-2.1L16 18l2.1-.9L19 15z',
   admin: 'M12 3l8 3v6c0 4.5-3.4 8.3-8 9-4.6-.7-8-4.5-8-9V6l8-3z',
 };
 
@@ -14,6 +15,7 @@ const useTabs = (isAdmin: boolean) => {
   return [
     { href: '/', label: 'Strategies', icon: ICONS.strategies, active: pathname === '/' || pathname.startsWith('/strategies') || pathname.startsWith('/backtests') },
     { href: '/lab', label: 'Lab', icon: ICONS.lab, active: pathname.startsWith('/lab') },
+    { href: '/requests', label: 'Requests', icon: ICONS.requests, active: pathname.startsWith('/requests') },
     ...(isAdmin ? [{ href: '/admin', label: 'Admin', icon: ICONS.admin, active: pathname.startsWith('/admin') }] : []),
   ];
 };

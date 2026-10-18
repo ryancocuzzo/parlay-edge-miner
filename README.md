@@ -1,42 +1,30 @@
-# NCAAF Edge Board
+# NCAAF Edge
 
-Private, auditable +EV college football board. Fair probability is the Pinnacle moneyline with vig removed. A bet is +EV when another book pays more than that fair price. Parlays are 2- and 3-leg combinations of +EV legs from different games.
+Private college football strategy lab: describe a betting idea in plain English, backtest it honestly (build seasons vs. a blind test), save it, and get weekly picks. Users can request features and bug fixes from the app; a Cursor cloud agent builds them and ships to production.
 
 ## Stack
 
-- Next.js on Vercel
-- Postgres via Prisma
-- Auth.js email magic links + allowlist
-- The Odds API (`americanfootball_ncaaf`), with short in-memory TTL cache on odds (5m) and scores (1m)
+Next.js 15 on Vercel · Prisma + Prisma Postgres · Auth.js (Google) · AI SDK + Vercel AI Gateway · CollegeFootballData · Cursor Cloud Agents API.
 
 ## Local
 
 ```bash
-cp .env.example .env
-npm install
-npx prisma db push
-npm run db:seed
+npm ci
+cp .env.example .env   # DATABASE_URL, AUTH_SECRET, AUTH_GOOGLE_ID/SECRET, CFBD_API_KEY, AI_GATEWAY_API_KEY
+npx prisma migrate deploy
 npm run dev
 ```
 
-CLI miner (no web):
+`npm test`, `npm run typecheck`, `npm run build`. Contributor and agent rules are in [AGENTS.md](AGENTS.md).
 
-```bash
-export ODDS_API_KEY=...
-npm start
-```
+## Deploys
 
-## Tests
+Pushes to `main` deploy to production. `src/factory/deploy-guard.ts` runs as Vercel's ignored build step and skips any deploy whose commits touch protected paths or ship non-additive migrations; protected changes ship with an admin `npx vercel deploy --prod`. Production builds run `prisma migrate deploy`.
 
-```bash
-npm test
-```
+## Feature requests
 
-Betting-logic e2e is Vitest over pre-fetched `fixtures/ncaaf` (price → settle → strategy hit rates / unit P/L). Those same fixture benchmarks seed `StrategyBenchmark` for the UI.
+Users submit from `/requests`. Each request is triaged by an LLM against an allowlist of safe categories, rate-limited per user (bug fixes are free), then dispatched to a Cursor cloud agent that commits to `main`. Status, costs and throttles live on `/admin`. Needs `CURSOR_API_KEY`, and optionally `FACTORY_DEV_DATABASE_URL` / `FACTORY_DEV_AUTH_SECRET` for the agent's sandbox.
 
 ## Cron
 
-Protected by `Authorization: Bearer $CRON_SECRET`:
-
-- `/api/cron?job=all` — refresh + settle (every 6h)
-- `/api/cron?job=weekly` — roll up live strategy benchmarks (Mondays)
+`/api/cron` every 6 hours (Bearer `CRON_SECRET`): odds snapshot, CFBD sync, grading, boards, and advancing feature requests.

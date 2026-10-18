@@ -4,6 +4,7 @@ import { prisma } from '@/lib/prisma';
 import { syncCfbd } from './data/ingest';
 import { appCfbdClient, latestRemaining, recordApiCall } from './data/usage';
 import { priceSlate } from './edge';
+import { advanceFactory } from './factory/service';
 import { fetchNcaafOdds } from './odds-api';
 import { generateBoards, gradeOpenPicks, importLegacyPicks, refreshLegacyParlays } from './strategy/service';
 
@@ -31,6 +32,7 @@ const JOBS = [
   ['grade', gradeOpenPicks],
   ['legacyParlays', refreshLegacyParlays],
   ['boards', generateBoards],
+  ['factory', advanceFactory],
 ] as const;
 
 export const runScheduledJobs = async (now: Date) => {

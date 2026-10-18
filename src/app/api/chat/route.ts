@@ -2,11 +2,13 @@ import { convertToModelMessages, isStepCount, streamText, validateUIMessages, ty
 import { z } from 'zod';
 import { requireUser } from '@/auth';
 import { callsSince, recordApiCall } from '@/data/usage';
-import { LAB_INSTRUCTIONS, LAB_MODEL } from '@/lab/instructions';
+import { LAB_INSTRUCTIONS } from '@/lab/instructions';
 import { labTools } from '@/lab/tools';
 import { prisma } from '@/lib/prisma';
 
 export const maxDuration = 120;
+
+const LAB_MODEL = 'anthropic/claude-sonnet-5.5';
 
 const HOURLY_LIMIT = 40;
 const bodySchema = z.object({ id: z.string().min(1).max(64), messages: z.array(z.unknown()).min(1) });
