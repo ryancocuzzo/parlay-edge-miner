@@ -55,8 +55,8 @@ const main = (): number => {
   }
   const previous = process.env.VERCEL_GIT_PREVIOUS_SHA;
   if (!previous) {
-    console.log('deploy-guard: no previous git deployment to diff against, deploying');
-    return DEPLOY;
+    console.error('deploy-guard: no previous deployment to diff against, refusing to deploy');
+    return SKIP_DEPLOY;
   }
   try {
     git('cat-file', '-e', `${previous}^{commit}`);
