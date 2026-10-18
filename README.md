@@ -19,7 +19,7 @@ npm run dev
 
 ## Deploys
 
-Pushes to `main` deploy to production. `src/factory/deploy-guard.ts` runs as Vercel's ignored build step and skips any deploy whose commits touch protected paths or ship non-additive migrations; protected changes ship with an admin `npx vercel deploy --prod`. Production builds run `prisma migrate deploy`.
+Pushes to `main` deploy to production. `src/factory/deploy-guard.ts` runs as Vercel's ignored build step and skips any deploy whose commits touch protected paths or ship non-additive migrations; to ship a protected change, an admin sets the Vercel production env var `GUARD_APPROVED_SHA` to the reviewed commit before pushing it (the guard diffs from the newer of that commit and the last git deploy). Production builds run `prisma migrate deploy`.
 
 ## Feature requests
 

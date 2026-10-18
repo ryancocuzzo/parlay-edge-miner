@@ -53,23 +53,24 @@ const main = (): number => {
     console.log('deploy-guard: only production builds deploy');
     return SKIP_DEPLOY;
   }
-  const previous = process.env.VERCEL_GIT_PREVIOUS_SHA;
-  if (!previous) {
-    console.error('deploy-guard: no previous deployment to diff against, refusing to deploy');
+  git('fetch', '--depth=200', 'origin', 'main');
+  const isAncestor = (commit: string, of: string) => {
+    try {
+      git('merge-base', '--is-ancestor', commit, of);
+      return true;
+    } catch {
+      return false;
+    }
+  };
+  const [first, second] = [process.env.VERCEL_GIT_PREVIOUS_SHA, process.env.GUARD_APPROVED_SHA].filter(
+    (sha): sha is string => !!sha && isAncestor(sha, 'HEAD'),
+  );
+  const base = first && second && isAncestor(first, second) ? second : first ?? second;
+  if (!base) {
+    console.error('deploy-guard: no deployed or approved commit in history to diff against, refusing to deploy');
     return SKIP_DEPLOY;
   }
-  try {
-    git('cat-file', '-e', `${previous}^{commit}`);
-  } catch {
-    try {
-      git('fetch', '--depth=200', 'origin', 'main');
-      git('cat-file', '-e', `${previous}^{commit}`);
-    } catch {
-      console.error(`deploy-guard: cannot find previous deployment ${previous} in history, refusing to deploy`);
-      return SKIP_DEPLOY;
-    }
-  }
-  const changes = git('diff', '--name-status', '--no-renames', previous, 'HEAD')
+  const changes = git('diff', '--name-status', '--no-renames', base, 'HEAD')
     .split('\n')
     .filter(Boolean)
     .map((line) => {
@@ -83,11 +84,11 @@ const main = (): number => {
   );
   const violations = reviewChanges(changes, migrationSql);
   if (violations.length) {
-    console.error(`deploy-guard: refusing to deploy ${previous.slice(0, 7)}..HEAD\n- ${violations.join('\n- ')}`);
-    console.error('Protected changes ship only through an admin CLI deploy (vercel deploy --prod).');
+    console.error(`deploy-guard: refusing to deploy ${base.slice(0, 7)}..HEAD\n- ${violations.join('\n- ')}`);
+    console.error('An admin ships protected changes by setting GUARD_APPROVED_SHA in Vercel to the reviewed commit, then pushing it.');
     return SKIP_DEPLOY;
   }
-  console.log(`deploy-guard: ${changes.length} files changed since ${previous.slice(0, 7)}, all allowed`);
+  console.log(`deploy-guard: ${changes.length} files changed since ${base.slice(0, 7)}, all allowed`);
   return DEPLOY;
 };
 
