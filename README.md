@@ -23,7 +23,7 @@ Pushes to `main` deploy to production. `src/factory/deploy-guard.ts` runs as Ver
 
 ## Feature requests
 
-Users submit from `/requests`. Each request is triaged by an LLM against an allowlist of safe categories, rate-limited per user (bug fixes are free), then dispatched to a Cursor cloud agent that commits to `main`. Status, costs and throttles live on `/admin`. Needs `CURSOR_API_KEY`, and optionally `FACTORY_DEV_DATABASE_URL` / `FACTORY_DEV_AUTH_SECRET` for the agent's sandbox.
+Users submit from `/requests`. Each request is triaged by an LLM against an allowlist of safe categories, rate-limited per user (bug fixes are free), then dispatched to a Cursor cloud agent that commits to `main`. Status, costs and throttles live on `/admin`. Needs `CURSOR_AGENT_API_KEY`, and optionally `FACTORY_DEV_DATABASE_URL` / `FACTORY_DEV_AUTH_SECRET` for the agent's sandbox.
 
 ## Cron
 

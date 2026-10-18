@@ -28,7 +28,7 @@ export type AgentRun = z.infer<typeof runSchema>;
 export type Screenshot = { mimeType: string; data: string };
 
 const call = async <T>(path: string, schema: z.ZodType<T, z.ZodTypeDef, unknown>, init?: RequestInit): Promise<T> => {
-  const apiKey = z.string().min(1).parse(process.env.CURSOR_API_KEY);
+  const apiKey = z.string().min(1).parse(process.env.CURSOR_AGENT_API_KEY);
   const response = await fetch(`${CURSOR_API}${path}`, {
     ...init,
     headers: { Authorization: `Basic ${Buffer.from(`${apiKey}:`).toString('base64')}`, 'Content-Type': 'application/json' },
