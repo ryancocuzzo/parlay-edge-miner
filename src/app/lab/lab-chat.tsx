@@ -172,6 +172,7 @@ export function LabChat({
   const busy = status === 'submitted' || status === 'streaming';
 
   useEffect(() => {
+    if (messages.length === 0) return;
     endRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' });
   }, [messages, status]);
 

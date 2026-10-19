@@ -54,7 +54,7 @@ body {
   font-family: var(--sans);
   font-size: 15px;
   line-height: 1.5;
-  overflow-x: hidden;
+  overflow-x: clip;
   -webkit-font-smoothing: antialiased;
   font-feature-settings: "cv11", "ss01";
   background: radial-gradient(1200px 420px at 50% -220px, rgba(18, 183, 106, 0.09), transparent 70%), var(--bg);
@@ -1500,9 +1500,10 @@ button.google svg {
 
 .lab-head {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
-  gap: 0.5rem;
+  gap: 0.5rem 0.75rem;
 }
 
 .lab-head h1 {
@@ -1511,12 +1512,13 @@ button.google svg {
 
 .lab-tools {
   display: flex;
+  flex-wrap: wrap;
   gap: 0.4rem;
 }
 
 .lab-tools button {
-  min-height: 36px;
-  padding: 0.3rem 0.7rem;
+  min-height: 40px;
+  padding: 0.3rem 0.75rem;
   font-size: 0.84rem;
 }
 
@@ -1578,12 +1580,21 @@ button.google svg {
 
 .thread {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: 1.25rem;
   padding: 1.25rem 0 0.75rem;
 }
 
+.thread > * {
+  min-width: 0;
+}
+
 .lab-empty {
-  padding: 0.25rem 0;
+  padding: 0;
+}
+
+.lab-empty .lede {
+  margin-bottom: 1.25rem;
 }
 
 .lab-empty h2 {
@@ -1894,8 +1905,12 @@ body:has(.composer textarea:focus) .composer {
   bottom: calc(var(--safe-bottom) + 0.5rem);
 }
 
-body:has(.composer) .shell {
-  padding-bottom: calc(var(--safe-bottom) + 1rem);
+body.signed-in:has(.composer) .shell {
+  padding-bottom: calc(var(--tabbar) + var(--safe-bottom) + 0.6rem);
+}
+
+body.signed-in:has(.composer textarea:focus) .shell {
+  padding-bottom: calc(var(--safe-bottom) + 0.5rem);
 }
 
 .composer textarea {
@@ -2276,6 +2291,11 @@ label.check {
   .composer,
   body:has(.composer textarea:focus) .composer {
     bottom: 1rem;
+  }
+
+  body.signed-in:has(.composer) .shell,
+  body.signed-in:has(.composer textarea:focus) .shell {
+    padding-bottom: calc(var(--safe-bottom) + 1rem);
   }
 
   .steps {
